@@ -25,6 +25,8 @@ const jsonLd = {
   name: sitio.nombre,
   description: sitio.descripcion,
   url: Astro.site?.href,
+  image: new URL('/og/inicio.jpg', Astro.site).href,
+  logo: new URL('/icono-512.png', Astro.site).href,
   telephone: sitio.telefono.link,
   email: sitio.email,
   address: {
@@ -45,17 +47,20 @@ const jsonLd = {
 <Base
   titulo={`${sitio.nombre} | Alquileres y ventas en San Martín y Palmira, Mendoza`}
   descripcion="Casas, departamentos y lotes en alquiler y venta en San Martín y Palmira, Mendoza, con el precio a la vista. Tasaciones y consultas directas por WhatsApp."
-  jsonLd={[jsonLd]}
+  jsonLd={[
+    jsonLd,
+    { '@context': 'https://schema.org', '@type': 'WebSite', name: sitio.nombre, url: Astro.site?.href, inLanguage: 'es-AR' },
+  ]}
 >
   <section class="hero">
     <div class="contenedor hero__grilla">
       <div class="hero__texto">
-        <h1>Alquileres y ventas en San Martín y Palmira</h1>
-        <p class="hero__bajada">
+        <h1 class="entra">Alquileres y ventas en San Martín y Palmira</h1>
+        <p class="hero__bajada entra" style="--i: 1">
           Casas, departamentos y lotes con el precio a la vista. Elegí, mirá las fotos y consultanos directo por
           WhatsApp.
         </p>
-        <SelectorOperacion conteo={conteo} />
+        <div class="entra" style="--i: 2"><SelectorOperacion conteo={conteo} /></div>
       </div>
       <div class="hero__visual">
         <HeroVisual propiedades={destacadas} />
@@ -65,14 +70,14 @@ const jsonLd = {
 
   <section class="seccion destacadas" aria-labelledby="titulo-destacadas">
     <div class="contenedor">
-      <div class="seccion__encabezado">
+      <div class="seccion__encabezado" data-revelar>
         <h2 id="titulo-destacadas">Disponibles ahora</h2>
         <a class="link" href="/propiedades">Ver todas las propiedades</a>
       </div>
       <ul class="grilla-propiedades">
         {
           destacadas.map((p, i) => (
-            <li>
+            <li data-revelar style={`--i: ${i % 3}`}>
               <TarjetaPropiedad propiedad={p} prioridad={i === 0} />
             </li>
           ))
@@ -83,7 +88,7 @@ const jsonLd = {
 
   <section id="propietarios" class="seccion fondo-oscuro propietarios" aria-labelledby="titulo-propietarios">
     <div class="contenedor propietarios__grilla">
-      <div>
+      <div data-revelar>
         <h2 id="titulo-propietarios">¿Querés vender o alquilar tu propiedad?</h2>
         <p class="propietarios__texto">
           Te hacemos la tasación y nos ocupamos de publicarla, mostrarla y acompañarte hasta la firma.
@@ -91,7 +96,7 @@ const jsonLd = {
         <ol class="proceso">
           {
             sitio.proceso.map((paso, i) => (
-              <li class="proceso__paso">
+              <li class="proceso__paso" data-revelar style={`--i: ${i + 1}`}>
                 <span class="proceso__numero" aria-hidden="true">{i + 1}</span>
                 <div>
                   <h3>{paso.titulo}</h3>
@@ -102,13 +107,13 @@ const jsonLd = {
           }
         </ol>
       </div>
-      <FormPropietarios />
+      <div data-revelar style="--i: 1"><FormPropietarios /></div>
     </div>
   </section>
 
   <section id="nosotros" class="seccion nosotros" aria-labelledby="titulo-nosotros">
     <div class="contenedor nosotros__grilla">
-      <div>
+      <div data-revelar>
         <h2 id="titulo-nosotros">Nosotros</h2>
         <p class="texto nosotros__texto">
           Somos una inmobiliaria de San Martín, Mendoza. Hacemos tasaciones, ventas y alquileres, y acompañamos cada
@@ -119,7 +124,7 @@ const jsonLd = {
         </ul>
       </div>
       <!-- La chapa de bronce de la puerta de la oficina. -->
-      <div class="chapa">
+      <div class="chapa" data-revelar style="--i: 2">
         <p class="chapa__nombre">{sitio.corredor.nombre}</p>
         <p class="chapa__cargo">{sitio.corredor.cargo}</p>
         <p class="chapa__matricula">Matrícula N.º {sitio.corredor.matricula}</p>
@@ -130,7 +135,7 @@ const jsonLd = {
 
   <section id="contacto" class="seccion contacto" aria-labelledby="titulo-contacto">
     <div class="contenedor contacto__grilla">
-      <div>
+      <div data-revelar>
         <h2 id="titulo-contacto">Contacto</h2>
         <ul class="contacto__datos">
           <li>
@@ -196,11 +201,13 @@ const jsonLd = {
           }
         </ul>
       </div>
-      <MapaFachada
-        embed={embedGoogle(direccionMapa, 16)}
-        titulo={`Mapa: ${sitio.nombre}, ${direccionCompleta}`}
-        lugar={direccionCompleta}
-      />
+      <div data-revelar style="--i: 1">
+        <MapaFachada
+          embed={embedGoogle(direccionMapa, 16)}
+          titulo={`Mapa: ${sitio.nombre}, ${direccionCompleta}`}
+          lugar={direccionCompleta}
+        />
+      </div>
     </div>
   </section>
 </Base>

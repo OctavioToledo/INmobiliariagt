@@ -47,11 +47,21 @@ const fuente = `@font-face{font-family:'Archivo Variable';font-style:normal;font
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex" />}
     <meta name="theme-color" content="#2e4a3b" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/icono-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <link rel="sitemap" href="/sitemap-index.xml" />
 
     <link rel="preload" href={archivo} as="font" type="font/woff2" crossorigin />
     <style is:inline set:html={fuente} />
+    <!-- Las animaciones de entrada solo se activan con JS y si el usuario no pidió reducir el movimiento. -->
+    <script is:inline>
+      if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('anima');
+      }
+    </script>
 
     <meta property="og:type" content={tipoOg} />
     <meta property="og:locale" content="es_AR" />
@@ -60,6 +70,8 @@ const fuente = `@font-face{font-family:'Archivo Variable';font-style:normal;font
     <meta property="og:description" content={descripcion} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={og} />
+    <meta property="og:image:secure_url" content={og} />
+    <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content={altImagenOg} />
@@ -67,6 +79,7 @@ const fuente = `@font-face{font-family:'Archivo Variable';font-style:normal;font
     <meta name="twitter:title" content={titulo} />
     <meta name="twitter:description" content={descripcion} />
     <meta name="twitter:image" content={og} />
+    <meta name="twitter:image:alt" content={altImagenOg} />
 
     {jsonLd.map((datos) => <script type="application/ld+json" is:inline set:html={JSON.stringify(datos)} />)}
   </head>
@@ -79,5 +92,21 @@ const fuente = `@font-face{font-family:'Archivo Variable';font-style:normal;font
     <Footer />
     <BotonWhatsApp ocultarEnMobile={flotanteSoloDesktop} />
     <slot name="final" />
+    <script>
+      // Revela al entrar en pantalla todo lo marcado con data-revelar (ver global.css).
+      if (document.documentElement.classList.contains('anima')) {
+        const observador = new IntersectionObserver(
+          (entradas) => {
+            for (const entrada of entradas) {
+              if (!entrada.isIntersecting) continue;
+              entrada.target.classList.add('revelado');
+              observador.unobserve(entrada.target);
+            }
+          },
+          { rootMargin: '0px 0px -8% 0px' },
+        );
+        document.querySelectorAll('[data-revelar]').forEach((el) => observador.observe(el));
+      }
+    </script>
   </body>
 </html>

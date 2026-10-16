@@ -184,3 +184,53 @@ export async function ogInicio(destacada: Propiedad | undefined, ruta: string | 
     ),
   );
 }
+
+/**
+ * Ícono cuadrado "GT" en PNG (favicon, pantalla de inicio del celular, Google).
+ * `margen` deja aire alrededor para los íconos que Android recorta en círculo (maskable).
+ */
+export async function iconoPng(tamano: number, margen = 0): Promise<Buffer> {
+  const interior = tamano - margen * 2;
+  const arbol = h(
+    'div',
+    { width: tamano, height: tamano, alignItems: 'center', justifyContent: 'center', background: C.alamo },
+    h(
+      'div',
+      {
+        width: interior * 0.72,
+        height: interior * 0.52,
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: C.ocre,
+        color: C.piedra,
+        borderRadius: Math.max(1, interior * 0.03),
+        fontFamily: 'Archivo Narrow',
+        fontWeight: 700,
+        fontSize: interior * 0.4,
+        lineHeight: 1,
+        paddingTop: interior * 0.02,
+      },
+      'GT',
+    ),
+  );
+  const svg = await satori(arbol as Parameters<typeof satori>[0], { width: tamano, height: tamano, fonts: await cargarFuentes() });
+  return sharp(Buffer.from(svg)).png({ compressionLevel: 9 }).toBuffer();
+}
+
+/** favicon.ico con un PNG adentro (formato ICO admitido por todos los navegadores desde Vista). */
+export async function faviconIco(): Promise<Buffer> {
+  const png = await iconoPng(48);
+  const cabecera = Buffer.alloc(22);
+  cabecera.writeUInt16LE(0, 0); // reservado
+  cabecera.writeUInt16LE(1, 2); // tipo: ícono
+  cabecera.writeUInt16LE(1, 4); // una imagen
+  cabecera.writeUInt8(48, 6); // ancho
+  cabecera.writeUInt8(48, 7); // alto
+  cabecera.writeUInt8(0, 8); // sin paleta
+  cabecera.writeUInt8(0, 9); // reservado
+  cabecera.writeUInt16LE(1, 10); // planos
+  cabecera.writeUInt16LE(32, 12); // bits por pixel
+  cabecera.writeUInt32LE(png.length, 14);
+  cabecera.writeUInt32LE(22, 18); // offset de la imagen
+  return Buffer.concat([cabecera, png]);
+}

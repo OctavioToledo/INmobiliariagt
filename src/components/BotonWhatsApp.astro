@@ -35,10 +35,35 @@ const { ocultarEnMobile = false, mensaje = mensajeGeneral } = Astro.props;
     color: var(--blanco);
     border-radius: 50%;
     box-shadow: 0 2px 8px rgb(22 107 58 / 0.4);
+    transition:
+      background-color 0.2s ease,
+      transform 0.25s var(--salida);
+    animation:
+      aparecer 0.5s var(--salida) 0.8s backwards,
+      latido 2.4s ease-out 3s 2;
   }
 
   .flotante:hover {
     background: var(--whatsapp-oscuro);
+    transform: scale(1.08);
+  }
+
+  @keyframes aparecer {
+    from {
+      opacity: 0;
+      transform: scale(0.4);
+    }
+  }
+
+  /* Un anillo que se expande dos veces y se apaga. */
+  @keyframes latido {
+    0% {
+      box-shadow: 0 2px 8px rgb(22 107 58 / 0.4), 0 0 0 0 rgb(27 127 69 / 0.45);
+    }
+    70%,
+    100% {
+      box-shadow: 0 2px 8px rgb(22 107 58 / 0.4), 0 0 0 16px rgb(27 127 69 / 0);
+    }
   }
 
   @media (max-width: 47.99rem) {

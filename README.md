@@ -132,7 +132,7 @@ El proyecto está conectado a Cloudflare como **Worker con assets estáticos** (
 En el panel de Cloudflare (Workers & Pages → inmobiliariagt → Settings → Build):
 
 - Deploy command: `npx wrangler deploy` (el build lo dispara `wrangler.jsonc`).
-- Variable de entorno de build `SITE_URL` con la URL pública (la `*.workers.dev` mientras sea demo, después `https://2inmobiliaria.com.ar`). Se usa para canonical, sitemap, Open Graph y el link del mensaje de WhatsApp.
+- URL pública: está en `astro.config.mjs` (hoy `https://inmobiliariagt.octatoledo7.workers.dev`; al apuntar el dominio, cambiarla a `https://2inmobiliaria.com.ar`). La variable de build `SITE_URL`, si se define, tiene prioridad. Se usa para canonical, sitemap, Open Graph y el link del mensaje de WhatsApp.
 - La versión de Node sale de `.node-version` (22).
 
 Para probar localmente igual que en producción: `npx wrangler dev` (sirve `dist/` con el mismo motor de assets).

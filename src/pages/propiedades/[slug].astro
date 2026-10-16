@@ -112,7 +112,7 @@ const jsonLd: Record<string, unknown>[] = [
     </div>
 
     <aside class="ficha__lateral">
-      <div class="ficha__encabezado">
+      <div class="ficha__encabezado entra">
         <h1>{p.titulo}</h1>
         <p class="ficha__meta">
           <span><Icono nombre="ubicacion" tamano={18} />{lugar}</span>
@@ -127,7 +127,7 @@ const jsonLd: Record<string, unknown>[] = [
           tamano="grande"
         />
       </div>
-      <div class="ficha__acciones">
+      <div class="ficha__acciones entra" style="--i: 1">
         <a class="boton boton--whatsapp boton--grande boton--ancho" href={wa} target="_blank" rel="noopener">
           <Icono nombre="whatsapp" />Consultar por WhatsApp
         </a>
@@ -148,7 +148,7 @@ const jsonLd: Record<string, unknown>[] = [
 
       {
         p.descripcion && (
-          <section aria-labelledby="titulo-descripcion">
+          <section aria-labelledby="titulo-descripcion" data-revelar>
             <h2 id="titulo-descripcion">Descripción</h2>
             <div class="texto ficha__descripcion">
               {p.descripcion.split(/\n{2,}/).map((parrafo) => <p>{parrafo}</p>)}
@@ -157,7 +157,7 @@ const jsonLd: Record<string, unknown>[] = [
         )
       }
 
-      <section aria-labelledby="titulo-ubicacion">
+      <section aria-labelledby="titulo-ubicacion" data-revelar>
         <h2 id="titulo-ubicacion">Ubicación</h2>
         <MapaFachada
           embed={embed}
@@ -178,8 +178,8 @@ const jsonLd: Record<string, unknown>[] = [
             <a class="link" href={listado}>{p.operacion === 'venta' ? 'Ver todas las ventas' : 'Ver todos los alquileres'}</a>
           </div>
           <ul class="similares__grilla">
-            {parecidas.map((q) => (
-              <li>
+            {parecidas.map((q, i) => (
+              <li data-revelar style={`--i: ${i % 3}`}>
                 <TarjetaPropiedad propiedad={q} />
               </li>
             ))}

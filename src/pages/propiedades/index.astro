@@ -31,7 +31,7 @@ const plural = (n: number) => `${n} ${n === 1 ? 'propiedad' : 'propiedades'}`;
 >
   <div class="contenedor listado">
     <header class="listado__encabezado">
-      <h1 data-titulo-listado>Propiedades en San Martín y Palmira</h1>
+      <h1 class="entra" data-titulo-listado>Propiedades en San Martín y Palmira</h1>
     </header>
 
     <div class="listado__grilla">
@@ -51,7 +51,7 @@ const plural = (n: number) => `${n} ${n === 1 ? 'propiedad' : 'propiedades'}`;
         <ul class="listado__tarjetas" data-tarjetas>
           {
             todas.map((p, i) => (
-              <li data-propiedad={JSON.stringify(datosFiltro(p))}>
+              <li data-propiedad={JSON.stringify(datosFiltro(p))} data-revelar style={`--i: ${i % 3}`}>
                 <TarjetaPropiedad propiedad={p} prioridad={i === 0} nivelTitulo="h2" />
               </li>
             ))

@@ -73,6 +73,34 @@ const colgadas = [
     min-height: 0;
     overflow: hidden;
     border-radius: var(--radio);
+    animation: foto-entra 0.9s var(--salida) backwards;
+  }
+
+  .collage__celda--2 {
+    animation-delay: 0.15s;
+  }
+
+  .collage__celda--3 {
+    animation-delay: 0.3s;
+  }
+
+  @keyframes foto-entra {
+    from {
+      opacity: 0;
+      clip-path: inset(0 0 100% 0);
+    }
+    to {
+      opacity: 1;
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
+  .collage__celda :global(img) {
+    transition: transform 1.2s var(--salida);
+  }
+
+  .collage__celda:hover :global(img) {
+    transform: scale(1.05);
   }
 
   .collage__celda--1 {
@@ -104,22 +132,47 @@ const colgadas = [
   }
 
   .reja__item {
+    --giro: -2deg;
     position: relative;
     justify-self: start;
-  }
-
-  .reja__item--1 {
-    transform: rotate(-2deg);
+    transform: rotate(var(--giro));
+    transform-origin: 50% -1.1rem;
+    animation: balanceo 1.6s ease-out both;
   }
 
   .reja__item--2 {
+    --giro: 1.5deg;
     justify-self: end;
-    transform: rotate(1.5deg);
+    animation-delay: 0.2s;
   }
 
   .reja__item--3 {
+    --giro: -1deg;
     margin-left: 12%;
-    transform: rotate(-1deg);
+    animation-delay: 0.4s;
+  }
+
+  /* Como un cartel recién colgado del alambre: se mece y se queda quieto. */
+  @keyframes balanceo {
+    0% {
+      opacity: 0;
+      transform: rotate(calc(var(--giro) + 9deg));
+    }
+    15% {
+      opacity: 1;
+    }
+    40% {
+      transform: rotate(calc(var(--giro) - 5deg));
+    }
+    65% {
+      transform: rotate(calc(var(--giro) + 2deg));
+    }
+    85% {
+      transform: rotate(calc(var(--giro) - 0.8deg));
+    }
+    100% {
+      transform: rotate(var(--giro));
+    }
   }
 
   /* El alambre de donde cuelga cada cartel. */

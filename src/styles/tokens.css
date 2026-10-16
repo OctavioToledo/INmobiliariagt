@@ -47,6 +47,9 @@
   --gutter: 1rem;
   --alto-header: 3.75rem;
   --tactil: 2.75rem;
+
+  /* Curva de salida suave para las animaciones. */
+  --salida: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @media (min-width: 48rem) {

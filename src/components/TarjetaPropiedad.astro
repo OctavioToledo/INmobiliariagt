@@ -68,6 +68,22 @@ const Titulo = nivelTitulo;
     background: var(--blanco);
     border: 1px solid var(--adobe);
     border-radius: var(--radio);
+    transition:
+      transform 0.3s var(--salida),
+      box-shadow 0.3s var(--salida),
+      border-color 0.3s ease;
+  }
+
+  @media (hover: hover) {
+    .tarjeta:hover {
+      transform: translateY(-4px);
+      border-color: var(--borde-control);
+      box-shadow: 0 14px 28px -14px rgb(34 39 42 / 0.35);
+    }
+
+    .tarjeta:hover .tarjeta__foto :global(img) {
+      transform: scale(1.04);
+    }
   }
 
   .tarjeta:focus-within {
@@ -77,6 +93,7 @@ const Titulo = nivelTitulo;
 
   .tarjeta__foto {
     position: relative;
+    overflow: hidden;
     aspect-ratio: 4 / 3;
     background: var(--adobe);
   }
@@ -85,6 +102,7 @@ const Titulo = nivelTitulo;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.6s var(--salida);
   }
 
   .tarjeta__foto :global(.tarjeta__cartel) {

@@ -104,6 +104,10 @@ a {
   text-decoration-thickness: 1px;
 }
 
+a {
+  transition: text-decoration-thickness 0.15s ease, color 0.15s ease;
+}
+
 a:hover {
   text-decoration-thickness: 2px;
 }
@@ -171,6 +175,23 @@ a:hover {
   text-align: center;
   text-decoration: none;
   white-space: nowrap;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s var(--salida),
+    box-shadow 0.2s ease;
+}
+
+.boton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px -6px rgb(34 39 42 / 0.45);
+}
+
+.boton:active {
+  transform: translateY(0);
+  box-shadow: none;
+  transition-duration: 0.05s;
 }
 
 .boton svg {
@@ -296,6 +317,33 @@ select.control {
 html[data-dev] .pendiente {
   outline: 2px dashed #c2410c;
   outline-offset: 2px;
+}
+
+/* Animaciones
+   Entrada al cargar: .entra (con --i para escalonar). Al hacer scroll: data-revelar (lo activa Base.astro).
+   Sin JS o con movimiento reducido todo se ve quieto desde el principio. */
+@keyframes subir {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+.entra {
+  animation: subir 0.6s var(--salida) backwards;
+  animation-delay: calc(var(--i, 0) * 90ms + 60ms);
+}
+
+.anima [data-revelar] {
+  transition:
+    opacity 0.7s var(--salida),
+    transform 0.7s var(--salida);
+  transition-delay: calc(var(--i, 0) * 80ms);
+}
+
+.anima [data-revelar]:not(.revelado) {
+  opacity: 0;
+  transform: translateY(22px);
 }
 
 @media (prefers-reduced-motion: reduce) {
