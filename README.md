@@ -119,24 +119,25 @@ src/
 scripts/pendientes.mjs
 ```
 
-## Deploy en Cloudflare Pages
+## Deploy en Cloudflare
 
-1. En Cloudflare: **Workers & Pages → Create → Pages → Connect to Git** y elegí el repo `OctavioToledo/INmobiliariagt`.
-2. Configuración del build:
-   - Framework preset: **Astro**
-   - Build command: `npm run build`
-   - Build output directory: `dist`
-3. Variables de entorno (Settings → Environment variables), en Production y Preview:
-   - `SITE_URL` = la URL pública (ej. `https://2inmobiliaria.com.ar`, o la `*.pages.dev` mientras sea demo). Se usa para canonical, sitemap, Open Graph y el link del mensaje de WhatsApp. Sin esta variable se usa `https://2inmobiliaria.com.ar`.
-   - La versión de Node sale de `.node-version` (22). Si el build usa otra, agregá `NODE_VERSION` = `22`.
-4. Dominio propio: Custom domains → `2inmobiliaria.com.ar` (cuando se migre del sitio de Wasi).
+El proyecto está conectado a Cloudflare como **Worker con assets estáticos** (Workers Builds). La configuración vive en `wrangler.jsonc`:
 
-Detalles que ya están resueltos:
+- `build.command` corre `npm run build` antes de cada deploy.
+- `assets.directory` publica `dist/` tal cual: no hay Worker ni adapter de servidor (no agregar `@astrojs/cloudflare`; el sitio es estático y las imágenes se generan en el build con sharp).
+- `html_handling: auto-trailing-slash` sirve `/ruta.html` como `/ruta`, sin barra final, igual que el canonical.
+- `not_found_handling: 404-page` usa `404.html`.
+- `public/_headers` fija caché inmutable para `/_astro/*` y headers de seguridad.
 
-- El sitio se genera como `/ruta.html` (`build.format: 'file'`). Pages lo sirve como `/ruta`: URLs limpias, sin barra final ni redirecciones, y coinciden con el canonical.
-- `public/_headers` fija caché inmutable para `/_astro/*` y algunos headers de seguridad.
-- La página 404 (`404.html`) la usa Pages automáticamente.
-- Las imágenes (AVIF/WebP y las de compartir) se generan en el build con sharp, no hace falta ningún servicio de imágenes.
+En el panel de Cloudflare (Workers & Pages → inmobiliariagt → Settings → Build):
+
+- Deploy command: `npx wrangler deploy` (el build lo dispara `wrangler.jsonc`).
+- Variable de entorno de build `SITE_URL` con la URL pública (la `*.workers.dev` mientras sea demo, después `https://2inmobiliaria.com.ar`). Se usa para canonical, sitemap, Open Graph y el link del mensaje de WhatsApp.
+- La versión de Node sale de `.node-version` (22).
+
+Para probar localmente igual que en producción: `npx wrangler dev` (sirve `dist/` con el mismo motor de assets).
+
+Dominio propio: Settings → Domains & Routes → agregar `2inmobiliaria.com.ar` cuando se migre del sitio de Wasi.
 
 ## Pasar a producción con Wasi
 
@@ -144,9 +145,9 @@ La inmobiliaria ya carga sus propiedades en Wasi. En producción el sitio las va
 
 1. **API de Wasi.** Requiere el plan Pro. Con la cuenta activa se obtienen el identificador de empresa y el token.
 2. **Loader.** En `src/lib/wasi.ts` está el esqueleto de un loader de Astro (`wasiLoader`) que en cada build trae las propiedades de la API y las mapea al esquema del sitio. Falta implementar `traerPropiedadesWasi` y `mapearPropiedad` siguiendo la documentación oficial de la API. A propósito, no hay endpoints ni nombres de campos inventados.
-3. **Activarlo.** En `src/content.config.ts`, reemplazar `file('src/data/propiedades.json')` por `wasiLoader({ idEmpresa: process.env.WASI_ID_EMPRESA, token: process.env.WASI_TOKEN })` y cargar esas variables en Cloudflare Pages (como *secret*). El resto del sitio no cambia, porque todo pasa por `src/lib/propiedades.ts`.
+3. **Activarlo.** En `src/content.config.ts`, reemplazar `file('src/data/propiedades.json')` por `wasiLoader({ idEmpresa: process.env.WASI_ID_EMPRESA, token: process.env.WASI_TOKEN })` y cargar esas variables como variables de build en Cloudflare. El resto del sitio no cambia, porque todo pasa por `src/lib/propiedades.ts`.
 4. **Fotos remotas.** Wasi sirve las fotos desde su dominio: hay que agregarlo en `image.domains` de `astro.config.mjs` y adaptar `src/lib/fotos.ts` (y `src/lib/og.ts`) para aceptar URLs.
-5. **Actualización por rebuild.** El sitio es estático: se regenera con un **deploy hook de Cloudflare Pages** (Settings → Builds & deployments → Deploy hooks). Se dispara:
+5. **Actualización por rebuild.** El sitio es estático: se regenera con un **deploy hook de Workers Builds** (Settings → Build → Deploy hooks). Se dispara:
    - con un **cron diario**: un Worker con Cron Trigger que haga `fetch(URL_DEL_HOOK, { method: 'POST' })` (o GitHub Actions con `schedule`), y/o
    - **a mano**, cuando cargan una propiedad y la quieren ver publicada enseguida.
 

@@ -1,0 +1,16 @@
+{
+  // Sitio 100% estático: Cloudflare sirve dist/ como assets, sin Worker ni adapter.
+  // Con este archivo `wrangler deploy` no intenta autoconfigurar el proyecto (ni agregar @astrojs/cloudflare).
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "inmobiliariagt",
+  "compatibility_date": "2026-10-01",
+  "build": {
+    "command": "npm run build"
+  },
+  "assets": {
+    "directory": "./dist",
+    // /propiedades sirve propiedades.html, sin barra final.
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  }
+}

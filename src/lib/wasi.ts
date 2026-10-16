@@ -3,7 +3,7 @@
  *
  * La inmobiliaria ya carga sus propiedades en Wasi, que expone una API (requiere el plan Pro).
  * Acá va a ir un loader custom de Astro que, en cada build:
- *   1. Llama a la API de Wasi con las credenciales del cliente (variables de entorno en Cloudflare Pages).
+ *   1. Llama a la API de Wasi con las credenciales del cliente (variables de build en Cloudflare).
  *   2. Mapea cada propiedad de Wasi al esquema del sitio (`DatosPropiedad`, ver src/content.config.ts).
  *   3. Guarda las entradas en el store de la colección `propiedades`.
  *
@@ -13,7 +13,7 @@
  * Las fotos de Wasi son remotas: habrá que permitir su dominio en `image.domains`
  * (astro.config.mjs) y adaptar src/lib/fotos.ts para aceptar URLs además de archivos locales.
  *
- * La actualización en producción es por rebuild: un deploy hook de Cloudflare Pages disparado por
+ * La actualización en producción es por rebuild: un deploy hook de Workers Builds disparado por
  * un cron diario (Cron Trigger de un Worker) y/o manualmente cuando cargan una propiedad nueva.
  *
  * Importante: los endpoints y nombres de campos de Wasi NO están definidos acá a propósito.
