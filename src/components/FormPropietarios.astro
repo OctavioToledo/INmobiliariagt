@@ -1,0 +1,140 @@
+---
+/** Pedido de tasación: arma el mensaje y abre WhatsApp. Sin backend. */
+import Icono from './Icono.astro';
+import { sitio } from '../config/sitio';
+
+const tipos = [
+  { valor: 'casa', texto: 'Casa' },
+  { valor: 'departamento', texto: 'Departamento' },
+  { valor: 'lote', texto: 'Lote' },
+  { valor: 'local', texto: 'Local comercial' },
+  { valor: 'propiedad', texto: 'Otra' },
+];
+---
+
+<form class="form-prop" data-form-propietarios data-numero={sitio.whatsapp.numero}>
+  <h3 class="form-prop__titulo">Pedí tu tasación</h3>
+
+  <fieldset class="form-prop__quiero">
+    <legend>Quiero</legend>
+    <div class="form-prop__opciones">
+      <label><input type="radio" name="quiere" value="vender" checked /> Vender</label>
+      <label><input type="radio" name="quiere" value="alquilar" /> Alquilar</label>
+    </div>
+  </fieldset>
+
+  <div class="campo">
+    <label for="fp-nombre">Tu nombre</label>
+    <input class="control" id="fp-nombre" name="nombre" type="text" autocomplete="given-name" required />
+  </div>
+
+  <div class="form-prop__fila">
+    <div class="campo">
+      <label for="fp-tipo">Tipo de propiedad</label>
+      <select class="control" id="fp-tipo" name="tipo">
+        {tipos.map((t) => <option value={t.valor}>{t.texto}</option>)}
+      </select>
+    </div>
+    <div class="campo">
+      <label for="fp-zona">Zona</label>
+      <input class="control" id="fp-zona" name="zona" type="text" placeholder="Ej.: Palmira" required />
+    </div>
+  </div>
+
+  <button type="submit" class="boton boton--whatsapp boton--grande boton--ancho">
+    <Icono nombre="whatsapp" />
+    Pedir tasación por WhatsApp
+  </button>
+  <p class="form-prop__nota">Se abre WhatsApp con el mensaje listo para enviar.</p>
+</form>
+
+<script>
+  import { linkWhatsApp, mensajeTasacion } from '../lib/whatsapp';
+
+  for (const form of document.querySelectorAll<HTMLFormElement>('[data-form-propietarios]')) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const datos = new FormData(form);
+      const mensaje = mensajeTasacion({
+        nombre: String(datos.get('nombre') ?? '').trim(),
+        quiere: datos.get('quiere') === 'alquilar' ? 'alquilar' : 'vender',
+        tipo: String(datos.get('tipo') ?? 'propiedad'),
+        zona: String(datos.get('zona') ?? '').trim(),
+      });
+      window.open(linkWhatsApp(mensaje), '_blank', 'noopener');
+    });
+  }
+</script>
+
+<style>
+  .form-prop {
+    display: grid;
+    gap: var(--esp-4);
+    padding: var(--esp-5);
+    background: var(--blanco);
+    color: var(--piedra);
+    border-radius: var(--radio);
+  }
+
+  .form-prop__titulo {
+    font-size: var(--t2);
+    font-stretch: var(--ancho-titulo);
+  }
+
+  .form-prop__quiero {
+    padding: 0;
+    border: 0;
+  }
+
+  .form-prop__quiero legend {
+    margin-bottom: var(--esp-1);
+    font-size: 0.9375rem;
+    font-weight: 600;
+  }
+
+  .form-prop__opciones {
+    display: flex;
+    gap: var(--esp-2);
+  }
+
+  .form-prop__opciones label {
+    display: inline-flex;
+    flex: 1;
+    align-items: center;
+    gap: var(--esp-2);
+    min-height: var(--tactil);
+    padding-inline: var(--esp-3);
+    border: 1px solid var(--borde-control);
+    border-radius: var(--radio);
+    font-weight: 550;
+    cursor: pointer;
+  }
+
+  .form-prop__opciones label:has(input:checked) {
+    border-color: var(--alamo);
+    box-shadow: inset 0 0 0 1px var(--alamo);
+  }
+
+  .form-prop__opciones input {
+    width: 1.15rem;
+    height: 1.15rem;
+    accent-color: var(--alamo);
+  }
+
+  .form-prop__fila {
+    display: grid;
+    gap: var(--esp-4);
+  }
+
+  @media (min-width: 30rem) {
+    .form-prop__fila {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .form-prop__nota {
+    font-size: 0.875rem;
+    color: var(--piedra-suave);
+    text-align: center;
+  }
+</style>

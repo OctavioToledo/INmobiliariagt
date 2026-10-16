@@ -1,0 +1,182 @@
+---
+import Logo from './Logo.astro';
+import Icono from './Icono.astro';
+import { sitio, direccionCompleta } from '../config/sitio';
+import { linkWhatsApp, mensajeGeneral } from '../lib/whatsapp';
+
+const anio = new Date().getFullYear();
+---
+
+<footer class="footer fondo-oscuro">
+  <div class="contenedor footer__grilla">
+    <div class="footer__marca">
+      <Logo />
+      <p class="footer__eslogan">“{sitio.eslogan}”</p>
+      <p>Tasaciones, ventas y alquileres en {sitio.zonaDeTrabajo}. Corredor matriculado N.º {sitio.corredor.matricula}.</p>
+    </div>
+
+    <div>
+      <h2 class="footer__titulo">Contacto</h2>
+      <ul class="footer__lista">
+        <li><Icono nombre="ubicacion" tamano={18} />{direccionCompleta}</li>
+        <li><Icono nombre="telefono" tamano={18} /><a href={`tel:${sitio.telefono.link}`}>{sitio.telefono.visible}</a></li>
+        <li>
+          <Icono nombre="whatsapp" tamano={18} />
+          <a href={linkWhatsApp(mensajeGeneral)} target="_blank" rel="noopener">
+            {sitio.whatsapp.visible}
+          </a>
+        </li>
+        <li><Icono nombre="mail" tamano={18} /><a href={`mailto:${sitio.email}`}>{sitio.email}</a></li>
+        {sitio.horarios && <li><Icono nombre="reloj" tamano={18} />{sitio.horarios}</li>}
+      </ul>
+    </div>
+
+    <div>
+      <h2 class="footer__titulo">Propiedades</h2>
+      <ul class="footer__lista footer__lista--links">
+        <li><a href="/propiedades?operacion=alquiler">Alquileres</a></li>
+        <li><a href="/propiedades?operacion=venta">Ventas</a></li>
+        <li><a href="/#propietarios">Tasaciones</a></li>
+        <li><a href="/#nosotros">Nosotros</a></li>
+      </ul>
+      <ul class="footer__redes">
+        {
+          sitio.redes.map((r) => (
+            <li>
+              <a href={r.url} target="_blank" rel="noopener" aria-label={r.nombre}>
+                <Icono nombre={r.nombre.toLowerCase() as 'facebook' | 'instagram' | 'youtube'} tamano={22} />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+
+  <div class="contenedor footer__legal">
+    <p>
+      Las medidas son aproximadas y las exactas constan en el título de cada inmueble. Fotos y videos son
+      ilustrativos y los precios son indicativos, no constituyen una oferta vinculante.
+    </p>
+    <p class="footer__pie">
+      <span>© {anio} {sitio.nombre}</span>
+      <a href={sitio.privacidadUrl}>Política de privacidad</a>
+      {sitio.firma.url ? <a href={sitio.firma.url}>{sitio.firma.texto}</a> : <span>{sitio.firma.texto}</span>}
+    </p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    padding-block: var(--esp-7) calc(var(--esp-6) + 4.5rem);
+  }
+
+  @media (min-width: 48rem) {
+    .footer {
+      padding-bottom: var(--esp-6);
+    }
+  }
+
+  .footer__grilla {
+    display: grid;
+    gap: var(--esp-6);
+  }
+
+  @media (min-width: 48rem) {
+    .footer__grilla {
+      grid-template-columns: 1.2fr 1.5fr 1fr;
+    }
+  }
+
+  .footer__marca p {
+    margin-top: var(--esp-3);
+    max-width: 30ch;
+    color: var(--adobe);
+  }
+
+  .footer__marca .footer__eslogan {
+    color: var(--ocre);
+    font-size: var(--t1);
+    font-weight: 700;
+    font-stretch: var(--ancho-titulo);
+  }
+
+  .footer__titulo {
+    margin-bottom: var(--esp-3);
+    font-size: var(--t1);
+  }
+
+  .footer__lista {
+    display: grid;
+    gap: var(--esp-1);
+    padding: 0;
+    list-style: none;
+  }
+
+  .footer__lista li {
+    display: flex;
+    align-items: center;
+    gap: var(--esp-2);
+    min-height: var(--tactil);
+    overflow-wrap: anywhere;
+  }
+
+  .footer__lista :global(svg) {
+    flex: none;
+    color: var(--adobe);
+  }
+
+  .footer__lista a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tactil);
+  }
+
+  .footer__redes {
+    display: flex;
+    gap: var(--esp-2);
+    margin-top: var(--esp-3);
+    padding: 0;
+    list-style: none;
+  }
+
+  .footer__redes a {
+    display: grid;
+    place-items: center;
+    width: var(--tactil);
+    height: var(--tactil);
+    border: 1px solid rgb(237 240 238 / 0.35);
+    border-radius: var(--radio);
+  }
+
+  .footer__redes a:hover {
+    background: var(--alamo-oscuro);
+  }
+
+  .footer__legal {
+    display: grid;
+    gap: var(--esp-3);
+    margin-top: var(--esp-6);
+    padding-top: var(--esp-5);
+    border-top: 1px solid rgb(237 240 238 / 0.18);
+    font-size: 0.875rem;
+    color: var(--adobe);
+  }
+
+  .footer__legal p:first-child {
+    max-width: 80ch;
+  }
+
+  .footer__pie {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 var(--esp-5);
+  }
+
+  .footer__pie a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tactil);
+  }
+</style>

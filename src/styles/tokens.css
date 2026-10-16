@@ -1,0 +1,57 @@
+/* Dirección "Alameda". Contrastes verificados (WCAG AA):
+   piedra/cielo 13.2 · blanco/alamo 9.7 · piedra/ocre 6.5 · blanco/acequia 6.4 · blanco/whatsapp 5.0 */
+:root {
+  --cielo: #edf0ee;
+  --piedra: #22272a;
+  --piedra-suave: #4d565b;
+  --alamo: #2e4a3b;
+  --alamo-oscuro: #233a2e;
+  --ocre: #d4a23a;
+  --acequia: #2f6482;
+  --adobe: #d8d1c4;
+  --adobe-claro: #ece7de;
+  --blanco: #ffffff;
+  /* El #1F8F4E del brief da 4.1:1 con blanco; se oscureció para llegar a AA. */
+  --whatsapp: #1b7f45;
+  --whatsapp-oscuro: #166b3a;
+  --borde-control: #8a8f8c;
+  --foco: #2f6482;
+
+  --fuente: 'Archivo Variable', 'Archivo Fallback', system-ui, sans-serif;
+
+  /* Escala modular 1.25 */
+  --t-2: 0.64rem;
+  --t-1: 0.8rem;
+  --t0: 1rem;
+  --t1: 1.25rem;
+  --t2: 1.563rem;
+  --t3: 1.953rem;
+  --t4: 2.441rem;
+  --t5: 3.052rem;
+
+  --ancho-titulo: 112%;
+  --ancho-cartel: 75%;
+
+  --esp-1: 0.25rem;
+  --esp-2: 0.5rem;
+  --esp-3: 0.75rem;
+  --esp-4: 1rem;
+  --esp-5: 1.5rem;
+  --esp-6: 2rem;
+  --esp-7: 3rem;
+  --esp-8: 4.5rem;
+
+  --radio-chapa: 2px;
+  --radio: 4px;
+  --contenedor: 72rem;
+  --gutter: 1rem;
+  --alto-header: 3.75rem;
+  --tactil: 2.75rem;
+}
+
+@media (min-width: 48rem) {
+  :root {
+    --gutter: 1.5rem;
+    --alto-header: 4.25rem;
+  }
+}

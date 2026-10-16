@@ -1,0 +1,204 @@
+---
+/**
+ * Controles de filtro del listado. La lógica vive en la página (src/pages/propiedades/index.astro)
+ * y en src/lib/filtros.ts. En mobile es un panel desplegable; en desktop, una columna fija.
+ */
+import Icono from './Icono.astro';
+import { formatearMonto, nombreTipo, type Tipo } from '../lib/formato';
+
+interface Props {
+  zonas: string[];
+  tipos: Tipo[];
+}
+
+const { zonas, tipos } = Astro.props;
+
+/** Topes de precio sugeridos, en la moneda de cada operación. */
+const TOPES = {
+  alquiler: [300_000, 400_000, 500_000, 600_000, 800_000, 1_000_000],
+  venta: [20_000, 40_000, 60_000, 80_000, 120_000, 200_000],
+} as const;
+
+const topes = {
+  alquiler: TOPES.alquiler.map((v) => ({ valor: v, texto: formatearMonto(v, 'ARS') })),
+  venta: TOPES.venta.map((v) => ({ valor: v, texto: formatearMonto(v, 'USD') })),
+};
+---
+
+<div class="filtros" data-filtros>
+  <button type="button" class="boton boton--secundario filtros__abrir" aria-expanded="false" aria-controls="panel-filtros" data-abrir-filtros>
+    <Icono nombre="filtros" />
+    <span data-etiqueta-filtros>Filtros</span>
+  </button>
+
+  <form id="panel-filtros" class="filtros__panel" data-form-filtros action="/propiedades" method="get">
+    <h2 class="filtros__titulo">Filtrar</h2>
+
+    <fieldset class="filtros__operacion">
+      <legend>Operación</legend>
+      <div class="filtros__segmento">
+        <input type="radio" id="f-op-todas" name="operacion" value="" checked />
+        <label for="f-op-todas">Todas</label>
+        <input type="radio" id="f-op-alquiler" name="operacion" value="alquiler" />
+        <label for="f-op-alquiler">Alquiler</label>
+        <input type="radio" id="f-op-venta" name="operacion" value="venta" />
+        <label for="f-op-venta">Venta</label>
+      </div>
+    </fieldset>
+
+    <div class="campo">
+      <label for="f-tipo">Tipo</label>
+      <select class="control" id="f-tipo" name="tipo">
+        <option value="">Todos</option>
+        {tipos.map((t) => <option value={t}>{nombreTipo[t]}</option>)}
+      </select>
+    </div>
+
+    <div class="campo">
+      <label for="f-zona">Zona</label>
+      <select class="control" id="f-zona" name="zona">
+        <option value="">Todas</option>
+        {zonas.map((z) => <option value={z}>{z}</option>)}
+      </select>
+    </div>
+
+    <div class="campo">
+      <label for="f-dormitorios">Dormitorios</label>
+      <select class="control" id="f-dormitorios" name="dormitorios">
+        <option value="">Cualquier cantidad</option>
+        {[1, 2, 3, 4].map((n) => <option value={n}>{n} o más</option>)}
+      </select>
+    </div>
+
+    <div class="campo">
+      <label for="f-precio">Precio máximo</label>
+      <select class="control" id="f-precio" name="precio" disabled data-precio data-topes={JSON.stringify(topes)}>
+        <option value="">Sin tope</option>
+      </select>
+      <p class="filtros__ayuda" id="f-precio-ayuda" data-precio-ayuda>Elegí alquiler o venta para filtrar por precio.</p>
+    </div>
+
+    <div class="filtros__pie">
+      <button type="button" class="link filtros__limpiar" data-limpiar>Quitar filtros</button>
+      <button type="button" class="boton boton--primario boton--grande boton--ancho filtros__mostrar" data-mostrar>
+        Mostrar propiedades
+      </button>
+    </div>
+  </form>
+</div>
+
+<style>
+  .filtros__abrir[aria-expanded='true'] {
+    background: var(--adobe-claro);
+  }
+
+  .filtros__panel {
+    display: none;
+    gap: var(--esp-4);
+    margin-top: var(--esp-3);
+    padding: var(--esp-4);
+    background: var(--blanco);
+    border: 1px solid var(--adobe);
+    border-radius: var(--radio);
+  }
+
+  .filtros__panel[data-abierto] {
+    display: grid;
+  }
+
+  .filtros__titulo {
+    font-size: var(--t1);
+    font-stretch: 100%;
+  }
+
+  .filtros__operacion {
+    padding: 0;
+    border: 0;
+  }
+
+  .filtros__operacion legend {
+    margin-bottom: var(--esp-1);
+    font-size: 0.9375rem;
+    font-weight: 600;
+  }
+
+  .filtros__segmento {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    padding: 3px;
+    background: var(--blanco);
+    border-radius: calc(var(--radio) + 3px);
+    box-shadow: inset 0 0 0 1px var(--borde-control);
+  }
+
+  .filtros__segmento input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .filtros__segmento label {
+    display: grid;
+    place-items: center;
+    min-height: var(--tactil);
+    border-radius: var(--radio);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+
+  .filtros__segmento input:checked + label {
+    background: var(--alamo);
+    color: var(--blanco);
+  }
+
+  .filtros__segmento input:focus-visible + label {
+    outline: 3px solid var(--foco);
+    outline-offset: 2px;
+  }
+
+  .filtros__ayuda {
+    font-size: 0.875rem;
+    color: var(--piedra-suave);
+  }
+
+  .filtros__ayuda[hidden] {
+    display: none;
+  }
+
+  .control:disabled {
+    background-color: var(--adobe-claro);
+    color: var(--piedra-suave);
+    cursor: not-allowed;
+  }
+
+  .filtros__pie {
+    display: grid;
+    gap: var(--esp-2);
+  }
+
+  .filtros__limpiar {
+    justify-self: start;
+    padding: 0;
+    background: none;
+    border: 0;
+    text-decoration: underline;
+  }
+
+  @media (min-width: 60rem) {
+    .filtros__abrir {
+      display: none;
+    }
+
+    .filtros__panel {
+      position: sticky;
+      top: calc(var(--alto-header) + var(--esp-4));
+      display: grid;
+      margin-top: 0;
+    }
+
+    .filtros__mostrar {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,197 @@
+---
+/** Fotos a pantalla completa en un <dialog>: Escape cierra, flechas navegan, swipe en celular. */
+import { Picture } from 'astro:assets';
+import Icono from './Icono.astro';
+import type { Foto } from '../lib/fotos';
+
+interface Props {
+  fotos: Foto[];
+}
+
+const { fotos } = Astro.props;
+const total = fotos.length;
+---
+
+<dialog class="lightbox" data-lightbox aria-label="Fotos a pantalla completa">
+  <ul class="lightbox__pista" data-lb-pista>
+    {
+      fotos.map((foto, i) => (
+        <li class="lightbox__item" data-lb-indice={i}>
+          <Picture
+            src={foto.src}
+            alt={foto.alt}
+            formats={['avif', 'webp']}
+            widths={[640, 1024, 1600]}
+            sizes="100vw"
+            loading="lazy"
+          />
+        </li>
+      ))
+    }
+  </ul>
+  <p class="lightbox__contador" aria-live="polite"><span data-lb-actual>1</span>{` / ${total}`}</p>
+  <button type="button" class="lightbox__boton lightbox__cerrar" data-lb-cerrar aria-label="Cerrar">
+    <Icono nombre="cerrar" tamano={26} />
+  </button>
+  {
+    total > 1 && (
+      <>
+        <button type="button" class="lightbox__boton lightbox__flecha lightbox__flecha--anterior" data-lb-anterior aria-label="Foto anterior">
+          <Icono nombre="anterior" tamano={28} />
+        </button>
+        <button type="button" class="lightbox__boton lightbox__flecha lightbox__flecha--siguiente" data-lb-siguiente aria-label="Foto siguiente">
+          <Icono nombre="siguiente" tamano={28} />
+        </button>
+      </>
+    )
+  }
+</dialog>
+
+<script>
+  for (const dialogo of document.querySelectorAll<HTMLDialogElement>('[data-lightbox]')) {
+    const pista = dialogo.querySelector<HTMLElement>('[data-lb-pista]')!;
+    const items = [...pista.querySelectorAll<HTMLElement>('[data-lb-indice]')];
+    const actual = dialogo.querySelector<HTMLElement>('[data-lb-actual]')!;
+    let indice = 0;
+
+    const reducido = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const ir = (i: number, suave = true) => {
+      const destino = Math.max(0, Math.min(items.length - 1, i));
+      pista.scrollTo({ left: items[destino]?.offsetLeft ?? 0, behavior: suave && !reducido() ? 'smooth' : 'auto' });
+    };
+
+    const observador = new IntersectionObserver(
+      (entradas) => {
+        for (const e of entradas) {
+          if (e.isIntersecting) {
+            indice = Number((e.target as HTMLElement).dataset.lbIndice);
+            actual.textContent = String(indice + 1);
+          }
+        }
+      },
+      { root: pista, threshold: 0.6 },
+    );
+    items.forEach((item) => observador.observe(item));
+
+    dialogo.addEventListener('abrir', (e) => {
+      dialogo.showModal();
+      ir((e as CustomEvent<number>).detail, false);
+    });
+    dialogo.addEventListener('close', () => {
+      dialogo.dispatchEvent(new CustomEvent('vista', { detail: indice }));
+    });
+    dialogo.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') ir(indice - 1);
+      if (e.key === 'ArrowRight') ir(indice + 1);
+    });
+    dialogo.querySelector('[data-lb-cerrar]')?.addEventListener('click', () => dialogo.close());
+    dialogo.querySelector('[data-lb-anterior]')?.addEventListener('click', () => ir(indice - 1));
+    dialogo.querySelector('[data-lb-siguiente]')?.addEventListener('click', () => ir(indice + 1));
+  }
+</script>
+
+<style>
+  .lightbox {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: #111416;
+    color: var(--blanco);
+  }
+
+  .lightbox::backdrop {
+    background: #111416;
+  }
+
+  .lightbox__pista {
+    display: flex;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    list-style: none;
+  }
+
+  .lightbox__pista::-webkit-scrollbar {
+    display: none;
+  }
+
+  .lightbox__item {
+    display: grid;
+    flex: 0 0 100%;
+    place-items: center;
+    padding: 3.75rem 0;
+    scroll-snap-align: start;
+  }
+
+  .lightbox__item :global(img) {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .lightbox__contador {
+    position: absolute;
+    top: 0;
+    left: var(--gutter);
+    display: flex;
+    align-items: center;
+    height: 3.75rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .lightbox__boton {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    padding: 0;
+    background: rgb(255 255 255 / 0.12);
+    border: 0;
+    border-radius: 50%;
+    color: var(--blanco);
+  }
+
+  .lightbox__boton:hover {
+    background: rgb(255 255 255 / 0.22);
+  }
+
+  .lightbox :focus-visible {
+    outline-color: var(--ocre);
+  }
+
+  .lightbox__cerrar {
+    top: 0.4rem;
+    right: var(--gutter);
+  }
+
+  .lightbox__flecha {
+    top: 50%;
+    display: none;
+    transform: translateY(-50%);
+  }
+
+  .lightbox__flecha--anterior {
+    left: var(--gutter);
+  }
+
+  .lightbox__flecha--siguiente {
+    right: var(--gutter);
+  }
+
+  @media (hover: hover) and (min-width: 48rem) {
+    .lightbox__flecha {
+      display: grid;
+    }
+  }
+</style>

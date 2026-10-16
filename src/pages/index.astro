@@ -1,0 +1,508 @@
+---
+import Base from '../layouts/Base.astro';
+import SelectorOperacion from '../components/SelectorOperacion.astro';
+import HeroVisual from '../components/HeroVisual.astro';
+import TarjetaPropiedad from '../components/TarjetaPropiedad.astro';
+import FormPropietarios from '../components/FormPropietarios.astro';
+import MapaFachada from '../components/MapaFachada.astro';
+import Icono from '../components/Icono.astro';
+import { sitio, direccionCompleta } from '../config/sitio';
+import { contar, obtenerDestacadas, obtenerPropiedades } from '../lib/propiedades';
+import { linkWhatsApp, mensajeGeneral } from '../lib/whatsapp';
+import { comoLlegar, embedGoogle } from '../lib/mapas';
+
+const todas = await obtenerPropiedades();
+const disponibles = todas.filter((p) => p.disponibilidad === 'disponible');
+const conteo = contar(disponibles);
+const destacadas = await obtenerDestacadas(6);
+
+const direccionMapa = `${direccionCompleta}, Argentina`;
+const wa = linkWhatsApp(mensajeGeneral);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'RealEstateAgent',
+  name: sitio.nombre,
+  description: sitio.descripcion,
+  url: Astro.site?.href,
+  telephone: sitio.telefono.link,
+  email: sitio.email,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: sitio.direccion.calle,
+    addressLocality: sitio.direccion.localidad,
+    addressRegion: sitio.direccion.provincia,
+    addressCountry: sitio.direccion.pais,
+  },
+  areaServed: ['San Martín, Mendoza', 'Palmira, Mendoza'],
+  sameAs: sitio.redes.map((r) => r.url),
+  ...(sitio.coordenadas && {
+    geo: { '@type': 'GeoCoordinates', latitude: sitio.coordenadas.lat, longitude: sitio.coordenadas.lng },
+  }),
+};
+---
+
+<Base
+  titulo={`${sitio.nombre} | Alquileres y ventas en San Martín y Palmira, Mendoza`}
+  descripcion="Casas, departamentos y lotes en alquiler y venta en San Martín y Palmira, Mendoza, con el precio a la vista. Tasaciones y consultas directas por WhatsApp."
+  jsonLd={[jsonLd]}
+>
+  <section class="hero">
+    <div class="contenedor hero__grilla">
+      <div class="hero__texto">
+        <h1>Alquileres y ventas en San Martín y Palmira</h1>
+        <p class="hero__bajada">
+          Casas, departamentos y lotes con el precio a la vista. Elegí, mirá las fotos y consultanos directo por
+          WhatsApp.
+        </p>
+        <SelectorOperacion conteo={conteo} />
+      </div>
+      <div class="hero__visual">
+        <HeroVisual propiedades={destacadas} />
+      </div>
+    </div>
+  </section>
+
+  <section class="seccion destacadas" aria-labelledby="titulo-destacadas">
+    <div class="contenedor">
+      <div class="seccion__encabezado">
+        <h2 id="titulo-destacadas">Disponibles ahora</h2>
+        <a class="link" href="/propiedades">Ver todas las propiedades</a>
+      </div>
+      <ul class="grilla-propiedades">
+        {
+          destacadas.map((p, i) => (
+            <li>
+              <TarjetaPropiedad propiedad={p} prioridad={i === 0} />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section id="propietarios" class="seccion fondo-oscuro propietarios" aria-labelledby="titulo-propietarios">
+    <div class="contenedor propietarios__grilla">
+      <div>
+        <h2 id="titulo-propietarios">¿Querés vender o alquilar tu propiedad?</h2>
+        <p class="propietarios__texto">
+          Te hacemos la tasación y nos ocupamos de publicarla, mostrarla y acompañarte hasta la firma.
+        </p>
+        <ol class="proceso">
+          {
+            sitio.proceso.map((paso, i) => (
+              <li class="proceso__paso">
+                <span class="proceso__numero" aria-hidden="true">{i + 1}</span>
+                <div>
+                  <h3>{paso.titulo}</h3>
+                  <p>{paso.texto}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+      <FormPropietarios />
+    </div>
+  </section>
+
+  <section id="nosotros" class="seccion nosotros" aria-labelledby="titulo-nosotros">
+    <div class="contenedor nosotros__grilla">
+      <div>
+        <h2 id="titulo-nosotros">Nosotros</h2>
+        <p class="texto nosotros__texto">
+          Somos una inmobiliaria de San Martín, Mendoza. Hacemos tasaciones, ventas y alquileres, y acompañamos cada
+          operación de principio a fin, con trato directo y sin vueltas.
+        </p>
+        <ul class="servicios">
+          {sitio.servicios.map((s) => <li><Icono nombre="check" tamano={20} />{s}</li>)}
+        </ul>
+      </div>
+      <!-- La chapa de bronce de la puerta de la oficina. -->
+      <div class="chapa">
+        <p class="chapa__nombre">{sitio.corredor.nombre}</p>
+        <p class="chapa__cargo">{sitio.corredor.cargo}</p>
+        <p class="chapa__matricula">Matrícula N.º {sitio.corredor.matricula}</p>
+        <p class="chapa__direccion">{direccionCompleta}</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="contacto" class="seccion contacto" aria-labelledby="titulo-contacto">
+    <div class="contenedor contacto__grilla">
+      <div>
+        <h2 id="titulo-contacto">Contacto</h2>
+        <ul class="contacto__datos">
+          <li>
+            <Icono nombre="ubicacion" />
+            <div><span class="contacto__etiqueta">Oficina</span>{direccionCompleta}</div>
+          </li>
+          <li>
+            <Icono nombre="telefono" />
+            <div>
+              <span class="contacto__etiqueta">Teléfono</span>
+              <a href={`tel:${sitio.telefono.link}`}>{sitio.telefono.visible}</a>
+            </div>
+          </li>
+          <li>
+            <Icono nombre="whatsapp" />
+            <div>
+              <span class="contacto__etiqueta">WhatsApp</span>
+              <a href={wa} target="_blank" rel="noopener">
+                {sitio.whatsapp.visible}
+              </a>
+            </div>
+          </li>
+          <li>
+            <Icono nombre="mail" />
+            <div>
+              <span class="contacto__etiqueta">Email</span>
+              <a href={`mailto:${sitio.email}`}>{sitio.email}</a>
+            </div>
+          </li>
+          {
+            sitio.horarios && (
+              <li>
+                <Icono nombre="reloj" />
+                <div>
+                  <span class="contacto__etiqueta">Horarios</span>
+                  {sitio.horarios}
+                </div>
+              </li>
+            )
+          }
+        </ul>
+        <div class="contacto__botones">
+          <a class="boton boton--whatsapp boton--grande" href={wa} target="_blank" rel="noopener">
+            <Icono nombre="whatsapp" />Escribinos por WhatsApp
+          </a>
+          <a class="boton boton--secundario boton--grande" href={`tel:${sitio.telefono.link}`}>
+            <Icono nombre="telefono" />Llamar
+          </a>
+          <a class="boton boton--secundario boton--grande" href={comoLlegar(direccionMapa)} target="_blank" rel="noopener">
+            <Icono nombre="ruta" />Cómo llegar
+          </a>
+        </div>
+        <ul class="contacto__redes">
+          {
+            sitio.redes.map((r) => (
+              <li>
+                <a href={r.url} target="_blank" rel="noopener">
+                  <Icono nombre={r.nombre.toLowerCase() as 'facebook' | 'instagram' | 'youtube'} />
+                  {r.nombre}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <MapaFachada
+        embed={embedGoogle(direccionMapa, 16)}
+        titulo={`Mapa: ${sitio.nombre}, ${direccionCompleta}`}
+        lugar={direccionCompleta}
+      />
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    padding-block: var(--esp-6) var(--esp-7);
+    border-bottom: 1px solid var(--adobe);
+  }
+
+  .hero__grilla {
+    display: grid;
+    gap: var(--esp-7);
+    align-items: center;
+  }
+
+  .hero__texto {
+    display: grid;
+    gap: var(--esp-4);
+  }
+
+  .hero h1 {
+    max-width: 16ch;
+  }
+
+  .hero__bajada {
+    max-width: 46ch;
+    margin-bottom: var(--esp-2);
+    font-size: 1.125rem;
+    color: var(--piedra-suave);
+  }
+
+  .hero__visual {
+    display: none;
+  }
+
+  @media (min-width: 60rem) {
+    .hero {
+      padding-block: var(--esp-8);
+    }
+
+    .hero__grilla {
+      grid-template-columns: 1.1fr 1fr;
+    }
+
+    .hero__visual {
+      display: block;
+    }
+  }
+
+  .grilla-propiedades {
+    display: grid;
+    gap: var(--esp-5);
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 37.5rem) {
+    .grilla-propiedades {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .grilla-propiedades {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* Propietarios */
+  .propietarios__grilla {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--esp-6);
+    align-items: start;
+  }
+
+  @media (min-width: 60rem) {
+    .propietarios__grilla {
+      grid-template-columns: 1.15fr 1fr;
+      gap: var(--esp-8);
+    }
+  }
+
+  .propietarios__texto {
+    max-width: 50ch;
+    margin-top: var(--esp-4);
+    font-size: 1.125rem;
+    color: var(--adobe);
+  }
+
+  .proceso {
+    display: grid;
+    gap: var(--esp-4);
+    margin-top: var(--esp-6);
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 37.5rem) {
+    .proceso {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--esp-5);
+    }
+  }
+
+  .proceso__paso {
+    display: flex;
+    gap: var(--esp-3);
+    padding-top: var(--esp-3);
+    border-top: 1px solid rgb(237 240 238 / 0.2);
+  }
+
+  .proceso__numero {
+    flex: none;
+    width: 1.6ch;
+    color: var(--ocre);
+    font-size: var(--t4);
+    font-weight: 800;
+    font-stretch: var(--ancho-cartel);
+    line-height: 0.95;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .proceso h3 {
+    font-size: 1.125rem;
+  }
+
+  .proceso p {
+    margin-top: var(--esp-1);
+    color: var(--adobe);
+  }
+
+  /* Nosotros */
+  .nosotros__grilla {
+    display: grid;
+    gap: var(--esp-6);
+    align-items: center;
+  }
+
+  @media (min-width: 48rem) {
+    .nosotros__grilla {
+      grid-template-columns: 1fr minmax(18rem, 24rem);
+      gap: var(--esp-8);
+    }
+  }
+
+  .nosotros__texto {
+    margin-top: var(--esp-4);
+    font-size: 1.125rem;
+  }
+
+  .servicios {
+    display: grid;
+    gap: var(--esp-2);
+    margin-top: var(--esp-5);
+    padding: 0;
+    list-style: none;
+    font-weight: 600;
+  }
+
+  .servicios li {
+    display: flex;
+    align-items: center;
+    gap: var(--esp-2);
+  }
+
+  .servicios :global(svg) {
+    color: var(--alamo);
+  }
+
+  .chapa {
+    position: relative;
+    display: grid;
+    gap: var(--esp-1);
+    max-width: 24rem;
+    padding: var(--esp-6) var(--esp-6) var(--esp-5);
+    background: var(--ocre);
+    color: var(--piedra);
+    border-radius: var(--radio-chapa);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.25), inset 0 0 0 6px rgb(34 39 42 / 0.08), 0 1px 3px rgb(34 39 42 / 0.25);
+  }
+
+  /* Los cuatro tornillos. */
+  .chapa::before {
+    content: '';
+    position: absolute;
+    inset: 0.6rem;
+    background:
+      radial-gradient(circle, rgb(34 39 42 / 0.4) 0 0.2rem, transparent 0.22rem) top left / 0.5rem 0.5rem no-repeat,
+      radial-gradient(circle, rgb(34 39 42 / 0.4) 0 0.2rem, transparent 0.22rem) top right / 0.5rem 0.5rem no-repeat,
+      radial-gradient(circle, rgb(34 39 42 / 0.4) 0 0.2rem, transparent 0.22rem) bottom left / 0.5rem 0.5rem no-repeat,
+      radial-gradient(circle, rgb(34 39 42 / 0.4) 0 0.2rem, transparent 0.22rem) bottom right / 0.5rem 0.5rem no-repeat;
+    pointer-events: none;
+  }
+
+  .chapa__nombre {
+    font-size: var(--t3);
+    font-weight: 700;
+    font-stretch: var(--ancho-titulo);
+    line-height: 1.05;
+  }
+
+  .chapa__cargo {
+    font-size: 1.0625rem;
+    font-weight: 600;
+  }
+
+  .chapa__matricula {
+    margin-top: var(--esp-2);
+    font-size: var(--t2);
+    font-weight: 800;
+    font-stretch: var(--ancho-cartel);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .chapa__direccion {
+    margin-top: var(--esp-3);
+    padding-top: var(--esp-3);
+    border-top: 1px solid rgb(34 39 42 / 0.25);
+    font-size: 0.9375rem;
+  }
+
+  /* Contacto */
+  .contacto {
+    background: var(--blanco);
+    border-top: 1px solid var(--adobe);
+  }
+
+  .contacto__grilla {
+    display: grid;
+    gap: var(--esp-6);
+  }
+
+  @media (min-width: 60rem) {
+    .contacto__grilla {
+      grid-template-columns: 1fr 1.1fr;
+      gap: var(--esp-8);
+      align-items: start;
+    }
+  }
+
+  .contacto__datos {
+    display: grid;
+    gap: var(--esp-3);
+    margin-top: var(--esp-5);
+    padding: 0;
+    list-style: none;
+  }
+
+  .contacto__datos li {
+    display: flex;
+    gap: var(--esp-3);
+    align-items: flex-start;
+  }
+
+  .contacto__datos li > :global(svg) {
+    flex: none;
+    margin-top: 0.15rem;
+    color: var(--alamo);
+  }
+
+  .contacto__datos a {
+    overflow-wrap: anywhere;
+  }
+
+  .contacto__etiqueta {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--piedra-suave);
+  }
+
+  .contacto__botones {
+    display: grid;
+    gap: var(--esp-3);
+    margin-top: var(--esp-5);
+  }
+
+  @media (min-width: 30rem) {
+    .contacto__botones {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .contacto__botones .boton--whatsapp {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .contacto__redes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--esp-2) var(--esp-4);
+    margin-top: var(--esp-5);
+    padding: 0;
+    list-style: none;
+  }
+
+  .contacto__redes a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--esp-2);
+    min-height: var(--tactil);
+    font-weight: 550;
+  }
+</style>

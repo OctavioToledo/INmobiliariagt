@@ -1,0 +1,507 @@
+[
+  {
+    "id": "10063990",
+    "codigo": 10063990,
+    "slug": "casa-alquiler-san-martin-barrio-san-pablo-10063990",
+    "titulo": "Casa en barrio San Pablo",
+    "operacion": "alquiler",
+    "tipo": "casa",
+    "precio": 600000,
+    "moneda": "ARS",
+    "periodo": "mensual",
+    "zona": "San Martín",
+    "calle": "Barrio San Pablo",
+    "dormitorios": 2,
+    "banos": 1,
+    "cocheras": 1,
+    "superficieTotal": null,
+    "superficieCubierta": null,
+    "estado": "usado",
+    "aptoCredito": null,
+    "mascotas": true,
+    "disponibilidad": "disponible",
+    "destacada": false,
+    "fechaAlta": "2026-08-16",
+    "descripcion": "Casa ubicada en barrio San Pablo, San Martín, Mendoza, en barrio abierto y con todos los servicios.\n\nCaracterísticas de la propiedad:\n• 2 dormitorios con placares\n• Living comedor\n• Cocina\n• 1 baño\n• Patio\n• Ingreso vehicular techado\n• Todos los servicios\n• Se aceptan mascotas\n\nActualización trimestral por ICL.\n\nRequisitos para alquilar:\n• DNI y constancia de CUIT/CUIL.\n• Comprobantes de ingresos demostrables.\n• Informes crediticios actualizados (Veraz, CODEME, BCRA) y certificado de inhibiciones.\n• Garantías según el perfil: recibos de sueldo de dos o más garantes, garantía propietaria como refuerzo o seguro de caución.\n\nToda la documentación queda sujeta a evaluación crediticia y validación previa.",
+    "fotos": [
+      {
+        "src": "05.jpg",
+        "alt": "Dormitorio de la casa en barrio San Pablo, con ventana"
+      },
+      {
+        "src": "02.jpg",
+        "alt": "Frente de la casa con ingreso vehicular techado"
+      },
+      {
+        "src": "03.jpg",
+        "alt": "Cocina y lavadero con calefón"
+      },
+      {
+        "src": "04.jpg",
+        "alt": "Dormitorio con placard y pasillo"
+      }
+    ],
+    "ubicacion": null
+  },
+  {
+    "id": "10263655",
+    "codigo": 10263655,
+    "slug": "departamento-alquiler-san-martin-sargento-cabral-10263655",
+    "titulo": "Departamento en calle Sargento Cabral",
+    "operacion": "alquiler",
+    "tipo": "departamento",
+    "precio": 550000,
+    "moneda": "ARS",
+    "periodo": "mensual",
+    "zona": "San Martín",
+    "calle": "Calle Sargento Cabral",
+    "dormitorios": 3,
+    "banos": 1,
+    "cocheras": 0,
+    "superficieTotal": null,
+    "superficieCubierta": null,
+    "estado": "usado",
+    "aptoCredito": null,
+    "mascotas": false,
+    "disponibilidad": "disponible",
+    "destacada": true,
+    "fechaAlta": "2026-08-17",
+    "descripcion": "Departamento en alquiler en planta alta, en San Martín, Mendoza.\n\nCaracterísticas:\n• 3 dormitorios\n• Cocina comedor\n• 1 baño\n• Planta alta\n• Electricidad, gas natural y agua corriente\n• Sin cochera\n• No se aceptan mascotas\n\nRequisitos para alquilar:\n• DNI y constancia de CUIT/CUIL.\n• Comprobantes de ingresos demostrables.\n• Informes crediticios actualizados (Veraz, CODEME, BCRA) y certificado de inhibiciones.\n• Garantías según el perfil: recibos de sueldo de dos o más garantes, garantía propietaria como refuerzo o seguro de caución.\n\nToda la documentación queda sujeta a evaluación crediticia y validación previa.\n\nSi no contás con garantes, podés presentar seguro de caución. Consultanos las opciones disponibles según tu situación.",
+    "fotos": [
+      {
+        "src": "04.jpg",
+        "alt": "Cocina con muebles negros del departamento en calle Sargento Cabral"
+      },
+      {
+        "src": "02.jpg",
+        "alt": "Frente del edificio y escalera caracol interior"
+      },
+      {
+        "src": "03.jpg",
+        "alt": "Ambiente principal y pasillo hacia el baño"
+      }
+    ],
+    "ubicacion": {
+      "lat": -33.089,
+      "lng": -68.469
+    }
+  },
+  {
+    "id": "10399218",
+    "codigo": 10399218,
+    "slug": "casa-alquiler-san-martin-barrio-circulo-medico-10399218",
+    "titulo": "Casa en barrio Círculo Médico",
+    "operacion": "alquiler",
+    "tipo": "casa",
+    "precio": 800000,
+    "moneda": "ARS",
+    "periodo": "mensual",
+    "zona": "San Martín",
+    "calle": "Barrio Círculo Médico",
+    "dormitorios": 3,
+    "banos": 1,
+    "cocheras": 1,
+    "superficieTotal": null,
+    "superficieCubierta": null,
+    "estado": "usado",
+    "aptoCredito": null,
+    "mascotas": null,
+    "disponibilidad": "disponible",
+    "destacada": true,
+    "fechaAlta": "2026-09-11",
+    "descripcion": "Excelente opción para quienes buscan una vivienda cómoda, funcional y con muy buenos espacios, en barrio Círculo Médico.\n\nLa propiedad cuenta con:\n• 3 dormitorios con placares\n• Living comedor\n• Cocina\n• 1 baño\n• Cochera pasante\n• Patio\n• Todos los servicios\n\nUna propiedad con ambientes bien distribuidos, espacios exteriores y cochera, ideal para uso familiar.",
+    "fotos": [
+      {
+        "src": "01.jpg",
+        "alt": "Frente de la casa en barrio Círculo Médico, con portón y rejas"
+      },
+      {
+        "src": "05.jpg",
+        "alt": "Ambiente amplio con ventana al frente"
+      },
+      {
+        "src": "02.jpg",
+        "alt": "Pasillo interior de la casa"
+      },
+      {
+        "src": "03.jpg",
+        "alt": "Dormitorio con ventana"
+      },
+      {
+        "src": "07.jpg",
+        "alt": "Dormitorio con ventana al patio"
+      },
+      {
+        "src": "04.jpg",
+        "alt": "Placard de pared completa"
+      },
+      {
+        "src": "06.jpg",
+        "alt": "Cocina con mesada de acero y calefón"
+      }
+    ],
+    "ubicacion": {
+      "lat": -33.075,
+      "lng": -68.466
+    }
+  },
+  {
+    "id": "9953249",
+    "codigo": 9953249,
+    "slug": "casa-venta-san-martin-cuesta-del-madero-9953249",
+    "titulo": "Casa con unidad en planta alta en calle Cuesta del Madero",
+    "operacion": "venta",
+    "tipo": "casa",
+    "precio": 75000,
+    "moneda": "USD",
+    "periodo": null,
+    "zona": "San Martín",
+    "calle": "Calle Cuesta del Madero",
+    "dormitorios": 4,
+    "banos": 2,
+    "cocheras": 3,
+    "superficieTotal": 242,
+    "superficieCubierta": 155,
+    "estado": "usado",
+    "aptoCredito": null,
+    "mascotas": null,
+    "disponibilidad": "disponible",
+    "destacada": false,
+    "fechaAlta": "2026-04-27",
+    "descripcion": "Se ofrece a la venta propiedad en San Martín, Mendoza, desarrollada sobre un terreno de 242 m², con una superficie construida aproximada de 155,69 m².\n\nEl inmueble cuenta con vivienda principal en planta baja y una unidad complementaria en planta alta con acceso exterior, lo que le otorga una funcionalidad muy interesante tanto para uso familiar como para quien busca una propiedad con posibilidad de doble aprovechamiento.\n\nLa propiedad dispone de:\n• Ambientes amplios\n• Buena distribución\n• Cochera\n• Patio\n• Todos los servicios\n\nPor su configuración, resulta una excelente opción para familias que necesiten espacios independientes, quienes busquen vivienda con unidad adicional, inversores que valoren el potencial de renta y compradores con visión de reciclaje, actualización y puesta en valor.\n\nEl inmueble presenta una construcción de buena calidad general y requiere trabajos de actualización y refacción, ofreciendo muy buenas posibilidades de mejora y modernización.",
+    "fotos": [
+      {
+        "src": "03.jpg",
+        "alt": "Frente de la casa en calle Cuesta del Madero, con escalera a la planta alta"
+      },
+      {
+        "src": "01.jpg",
+        "alt": "Vereda y frente enrejado de la casa"
+      },
+      {
+        "src": "02.jpg",
+        "alt": "Portón de la cochera y escalera exterior"
+      },
+      {
+        "src": "04.jpg",
+        "alt": "Pasillo lateral descubierto"
+      },
+      {
+        "src": "05.jpg",
+        "alt": "Ambiente principal de la planta baja"
+      },
+      {
+        "src": "06.jpg",
+        "alt": "Cocina con muebles de madera"
+      },
+      {
+        "src": "07.jpg",
+        "alt": "Dormitorio con ventana"
+      },
+      {
+        "src": "10.jpg",
+        "alt": "Dormitorio con cortinas"
+      },
+      {
+        "src": "09.jpg",
+        "alt": "Lavadero con calefón"
+      },
+      {
+        "src": "11.jpg",
+        "alt": "Cocina de la unidad en planta alta, con techo de madera"
+      },
+      {
+        "src": "12.jpg",
+        "alt": "Ambiente de la planta alta con techo de madera y ladrillo visto"
+      }
+    ],
+    "ubicacion": {
+      "lat": -33.084,
+      "lng": -68.485
+    }
+  },
+  {
+    "id": "10290849",
+    "codigo": 10290849,
+    "slug": "departamento-alquiler-san-martin-agustin-alvarez-10290849",
+    "titulo": "Departamento en calle Agustín Álvarez",
+    "operacion": "alquiler",
+    "tipo": "departamento",
+    "precio": 250000,
+    "moneda": "ARS",
+    "periodo": "mensual",
+    "zona": "San Martín",
+    "calle": "Calle Agustín Álvarez",
+    "dormitorios": 1,
+    "banos": 1,
+    "cocheras": null,
+    "superficieTotal": null,
+    "superficieCubierta": null,
+    "estado": "usado",
+    "aptoCredito": null,
+    "mascotas": null,
+    "disponibilidad": "disponible",
+    "destacada": false,
+    "fechaAlta": "2026-08-17",
+    "descripcion": "Una opción práctica y funcional para quienes buscan un departamento de 2 ambientes, con espacios bien distribuidos.\n\nLa propiedad cuenta con:\n• 1 dormitorio con placard\n• 1 baño\n• Cocina equipada\n• Cochera opcional\n• Servicio de luz y agua\n• Gas envasado\n• Con expensas ($30.000)\n\nActualización trimestral, según índice o porcentaje establecido en el contrato.",
+    "fotos": [
+      {
+        "src": "02.jpg",
+        "alt": "Cocina equipada del departamento en calle Agustín Álvarez"
+      },
+      {
+        "src": "03.jpg",
+        "alt": "Dormitorio con placard"
+      },
+      {
+        "src": "04.jpg",
+        "alt": "Patio común del complejo con cocheras"
+      }
+    ],
+    "ubicacion": {
+      "lat": -33.091,
+      "lng": -68.474
+    }
+  },
+  {
+    "id": "10291426",
+    "codigo": 10291426,
+    "slug": "departamento-alquiler-san-martin-tomas-thomas-10291426",
+    "titulo": "Departamento en calle Tomás Thomas",
+    "operacion": "alquiler",
+    "tipo": "departamento",
+    "precio": 350000,
+    "moneda": "ARS",
+    "periodo": "mensual",
+    "zona": "San Martín",
+    "calle": "Calle Tomás Thomas",
+    "dormitorios": 1,
+    "banos": 1,
+    "cocheras": null,
+    "superficieTotal": null,
+    "superficieCubierta": null,
+    "estado": "usado",
+    "aptoCredito": null,
+    "mascotas": null,
+    "disponibilidad": "disponible",
+    "destacada": true,
+    "fechaAlta": "2026-08-17",
+    "descripcion": "Una opción práctica y funcional para quienes buscan vivir en una zona céntrica de San Martín, con servicios completos y espacios comunes con mantenimiento.\n\nCaracterísticas del departamento:\n• 1 dormitorio\n• Comedor\n• Cocina\n• 1 baño\n• Luz, agua y gas\n• Espacios comunes con mantenimiento\n• Buena iluminación natural\n• Ubicación céntrica\n\nActualización trimestral, conforme al índice o porcentaje establecido en el contrato de locación.",
+    "fotos": [
+      {
+        "src": "04.jpg",
+        "alt": "Dormitorio del departamento en calle Tomás Thomas, con ventana grande"
+      },
+      {
+        "src": "02.jpg",
+        "alt": "Ambiente con ventana y calefactor"
+      },
+      {
+        "src": "05.jpg",
+        "alt": "Ambiente y cocina con mesada y calefón"
+      },
+      {
+        "src": "03.jpg",
+        "alt": "Frente del edificio sobre calle Tomás Thomas"
+      }
+    ],
+    "ubicacion": {
+      "lat": -33.088,
+      "lng": -68.468
+    }
+  },
+  {
+    "id": "10293359",
+    "codigo": 10293359,
+    "slug": "departamento-alquiler-san-martin-perrupato-10293359",
+    "titulo": "Departamento en planta baja en calle Perrupato",
+    "operacion": "alquiler",
+    "tipo": "departamento",
+    "precio": 350000,
+    "moneda": "ARS",
+    "periodo": "mensual",
+    "zona": "San Martín",
+    "calle": "Calle Perrupato",
+    "dormitorios": 1,
+    "banos": 1,
+    "cocheras": null,
+    "superficieTotal": null,
+    "superficieCubierta": null,
+    "estado": "usado",
+    "aptoCredito": null,
+    "mascotas": null,
+    "disponibilidad": "disponible",
+    "destacada": true,
+    "fechaAlta": "2026-08-18",
+    "descripcion": "Una opción ubicada en una zona céntrica, con servicios completos y espacios comunes con mantenimiento. Planta baja.\n\nLa propiedad cuenta con:\n• 1 comedor\n• 1 dormitorio\n• 1 baño\n• Servicios completos: luz, agua y gas\n• Espacios comunes con mantenimiento (se abona mantenimiento)\n• Cochera opcional, según disponibilidad\n\nActualización trimestral según índice o porcentaje establecido en contrato.",
+    "fotos": [
+      {
+        "src": "03.jpg",
+        "alt": "Cocina del departamento en calle Perrupato, con horno y calefón"
+      },
+      {
+        "src": "02.jpg",
+        "alt": "Patio común con escalera metálica a planta alta"
+      },
+      {
+        "src": "04.jpg",
+        "alt": "Cocina comedor con piso de granito"
+      },
+      {
+        "src": "05.jpg",
+        "alt": "Dormitorio con placard y ventana con postigos de madera"
+      }
+    ],
+    "ubicacion": {
+      "lat": -33.089,
+      "lng": -68.482
+    }
+  },
+  {
+    "id": "10391330",
+    "codigo": 10391330,
+    "slug": "departamento-alquiler-palmira-soberania-nacional-10391330",
+    "titulo": "Departamento en calle Soberanía Nacional, Palmira",
+    "operacion": "alquiler",
+    "tipo": "departamento",
+    "precio": 460000,
+    "moneda": "ARS",
+    "periodo": "mensual",
+    "zona": "Palmira",
+    "calle": "Calle Soberanía Nacional",
+    "dormitorios": 2,
+    "banos": 1,
+    "cocheras": 1,
+    "superficieTotal": null,
+    "superficieCubierta": null,
+    "estado": "usado",
+    "aptoCredito": null,
+    "mascotas": null,
+    "disponibilidad": "disponible",
+    "destacada": true,
+    "fechaAlta": "2026-09-10",
+    "descripcion": "Se ofrece en alquiler departamento ubicado sobre calle Soberanía Nacional, en Palmira.\n\nLa propiedad se compone de:\n• 2 dormitorios\n• Cocina comedor\n• Cochera\n• Todos los servicios\n\nSe trata de una opción funcional y cómoda, ideal para vivienda permanente.",
+    "fotos": [
+      {
+        "src": "02.jpg",
+        "alt": "Dormitorio del departamento en Soberanía Nacional, con placard y techo de madera"
+      },
+      {
+        "src": "03.jpg",
+        "alt": "Cocina comedor con techo de madera"
+      },
+      {
+        "src": "04.jpg",
+        "alt": "Patio techado con paredes de ladrillo visto"
+      }
+    ],
+    "ubicacion": {
+      "lat": -33.05,
+      "lng": -68.568
+    }
+  },
+  {
+    "id": "8982824",
+    "codigo": 8982824,
+    "slug": "departamento-venta-san-martin-complejo-perrupato-8982824",
+    "titulo": "Complejo de 4 departamentos en calle Perrupato",
+    "operacion": "venta",
+    "tipo": "departamento",
+    "precio": null,
+    "moneda": "USD",
+    "periodo": null,
+    "zona": "San Martín",
+    "calle": "Calle Perrupato",
+    "dormitorios": 6,
+    "banos": 4,
+    "cocheras": 3,
+    "superficieTotal": null,
+    "superficieCubierta": null,
+    "estado": "usado",
+    "aptoCredito": null,
+    "mascotas": null,
+    "disponibilidad": "disponible",
+    "destacada": false,
+    "fechaAlta": "2025-04-10",
+    "descripcion": "Complejo de departamentos en venta: una oportunidad de inversión.\n\nSe vende complejo habitacional compuesto por 4 departamentos totalmente funcionales y actualmente alquilados de forma individual, lo que garantiza una rentabilidad inmediata y constante.\n\n• 2 departamentos de 2 dormitorios\n• 2 departamentos de 1 dormitorio\n• 3 cocheras incluidas\n• Servicios independientes de luz y gas, agua compartida y luz común\n\nContamos con estudio de mercado que respalda la rentabilidad actual y proyecta una amortización a corto plazo.\n\nAdemás, el complejo cuenta con proyecto aprobado para ampliar 2 unidades más y una cochera adicional, lo que eleva el valor de reventa y mejora el rendimiento futuro.\n\nInvertí en una propiedad que ya está generando ingresos y aún tiene más por crecer.",
+    "fotos": [],
+    "ubicacion": {
+      "lat": -33.089,
+      "lng": -68.482
+    }
+  },
+  {
+    "id": "10480182",
+    "codigo": 10480182,
+    "slug": "lote-venta-san-martin-callejon-menacho-10480182",
+    "titulo": "Lote de 1.600 m² en callejón Menacho",
+    "operacion": "venta",
+    "tipo": "lote",
+    "precio": 11500,
+    "moneda": "USD",
+    "periodo": null,
+    "zona": "San Martín",
+    "calle": "Callejón Menacho",
+    "dormitorios": null,
+    "banos": null,
+    "cocheras": null,
+    "superficieTotal": 1618,
+    "superficieCubierta": null,
+    "estado": null,
+    "aptoCredito": null,
+    "mascotas": null,
+    "disponibilidad": "disponible",
+    "destacada": true,
+    "fechaAlta": "2026-10-08",
+    "descripcion": "La propiedad cuenta con aproximadamente 1.600 m², ideal para pensar en distintos usos: vivienda con gran patio, quincho, pileta, sector de reuniones, jardín, huerta, espacio recreativo o incluso un proyecto de inversión, siempre sujeto a las factibilidades y autorizaciones correspondientes.\n\nDispone de una superficie generosa que permite imaginar un desarrollo cómodo y con buena independencia entre los distintos sectores.\n\nDatos principales:\n• Superficie según mensura: 1.618,76 m²\n• Superficie libre de afectación: 1.478,37 m²\n• Acceso por callejón Menacho\n• Agua y electricidad informadas\n• Inmueble desocupado\n• Construcciones existentes en estado de demolición\n\nUna alternativa interesante para quien prioriza espacio, potencial y precio de ingreso. Consultanos para recibir el plano de mensura, ampliar información y coordinar una visita.",
+    "fotos": [
+      {
+        "src": "03.jpg",
+        "alt": "Lote en callejón Menacho visto desde el acceso, con árboles"
+      },
+      {
+        "src": "04.jpg",
+        "alt": "Terreno del lote con un árbol grande al fondo"
+      },
+      {
+        "src": "05.jpg",
+        "alt": "Fondo del lote con una construcción antigua"
+      },
+      {
+        "src": "06.jpg",
+        "alt": "Lote con cartel de venta y construcción existente"
+      }
+    ],
+    "ubicacion": {
+      "lat": -33.081,
+      "lng": -68.496
+    }
+  },
+  {
+    "id": "7163860",
+    "codigo": 7163860,
+    "slug": "lote-venta-la-colonia-arquitectos-del-este-7163860",
+    "titulo": "Lote de 350 m² en barrio privado Arquitectos del Este",
+    "operacion": "venta",
+    "tipo": "lote",
+    "precio": 6000,
+    "moneda": "USD",
+    "periodo": null,
+    "zona": "La Colonia, Junín",
+    "calle": "Barrio Fideicomiso Arquitectos del Este",
+    "dormitorios": null,
+    "banos": null,
+    "cocheras": null,
+    "superficieTotal": 350,
+    "superficieCubierta": null,
+    "estado": null,
+    "aptoCredito": null,
+    "mascotas": null,
+    "disponibilidad": "disponible",
+    "destacada": false,
+    "fechaAlta": "2025-08-18",
+    "descripcion": "Viví en el barrio privado Fideicomiso Arquitectos del Este, en Constitución, La Colonia.\n\nÚltima oportunidad para ser parte de este barrio: queda 1 lote disponible de 350 m².\n\n• Lote de 350 m² con excelente orientación\n• Ubicación en el corazón de La Colonia\n• Barrio 100% vendido: es el último lote disponible",
+    "fotos": [],
+    "ubicacion": null
+  }
+]

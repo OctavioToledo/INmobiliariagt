@@ -1,0 +1,51 @@
+---
+/** Barra fija de consulta en la ficha (solo mobile). Reemplaza al botón flotante. */
+import Icono from './Icono.astro';
+import { sitio } from '../config/sitio';
+
+interface Props {
+  whatsapp: string;
+}
+
+const { whatsapp } = Astro.props;
+---
+
+<div class="barra" role="region" aria-label="Consultar por esta propiedad">
+  <a class="boton boton--whatsapp barra__wa" href={whatsapp} target="_blank" rel="noopener">
+    <Icono nombre="whatsapp" />Consultar por WhatsApp
+  </a>
+  <a class="boton boton--secundario barra__llamar" href={`tel:${sitio.telefono.link}`}>
+    <Icono nombre="telefono" />Llamar
+  </a>
+</div>
+
+<style>
+  .barra {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 15;
+    display: flex;
+    gap: var(--esp-2);
+    padding: var(--esp-2) var(--gutter) calc(var(--esp-2) + env(safe-area-inset-bottom));
+    background: var(--blanco);
+    border-top: 1px solid var(--adobe);
+    box-shadow: 0 -2px 10px rgb(34 39 42 / 0.08);
+  }
+
+  .barra .boton {
+    min-height: 3rem;
+    padding-inline: var(--esp-3);
+  }
+
+  .barra__wa {
+    flex: 1;
+  }
+
+  @media (min-width: 48rem) {
+    .barra {
+      display: none;
+    }
+  }
+</style>

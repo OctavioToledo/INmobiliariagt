@@ -1,0 +1,108 @@
+---
+/**
+ * Mapa con fachada: no carga nada de terceros hasta que la persona toca "Ver en el mapa".
+ */
+import Icono from './Icono.astro';
+
+interface Props {
+  /** URL del iframe (Google Maps embed u OpenStreetMap). */
+  embed: string;
+  /** Título accesible del iframe. */
+  titulo: string;
+  /** Texto principal de la fachada (dirección o zona). */
+  lugar: string;
+  nota?: string;
+}
+
+const { embed, titulo, lugar, nota } = Astro.props;
+---
+
+<div class="mapa" data-mapa data-embed={embed} data-titulo={titulo}>
+  <div class="mapa__fachada">
+    <Icono nombre="ubicacion" tamano={36} />
+    <p class="mapa__lugar">{lugar}</p>
+    {nota && <p class="mapa__nota">{nota}</p>}
+    <button type="button" class="boton boton--secundario" data-cargar-mapa>
+      <Icono nombre="lote" />
+      Ver en el mapa
+    </button>
+  </div>
+</div>
+
+<script>
+  for (const mapa of document.querySelectorAll<HTMLElement>('[data-mapa]')) {
+    mapa.querySelector('[data-cargar-mapa]')?.addEventListener('click', () => {
+      const iframe = document.createElement('iframe');
+      iframe.src = mapa.dataset.embed ?? '';
+      iframe.title = mapa.dataset.titulo ?? 'Mapa';
+      iframe.loading = 'lazy';
+      iframe.referrerPolicy = 'no-referrer-when-downgrade';
+      iframe.allowFullscreen = true;
+      mapa.replaceChildren(iframe);
+      iframe.focus();
+    });
+  }
+</script>
+
+<style>
+  .mapa {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border: 1px solid var(--adobe);
+    border-radius: var(--radio);
+    /* Trama de manzanas y una acequia: sugiere un plano sin cargar ninguno. */
+    background:
+      linear-gradient(100deg, transparent 47%, rgb(47 100 130 / 0.25) 47% 49%, transparent 49%),
+      repeating-linear-gradient(0deg, transparent 0 46px, var(--adobe) 46px 52px),
+      repeating-linear-gradient(90deg, transparent 0 62px, var(--adobe) 62px 68px),
+      var(--adobe-claro);
+  }
+
+  @media (min-width: 48rem) {
+    .mapa {
+      aspect-ratio: 16 / 10;
+    }
+  }
+
+  .mapa__fachada {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--esp-2);
+    padding: var(--esp-4);
+    text-align: center;
+  }
+
+  .mapa__fachada > :global(svg) {
+    color: var(--alamo);
+  }
+
+  .mapa__lugar {
+    padding: 0.2rem 0.6rem;
+    background: var(--blanco);
+    border-radius: var(--radio);
+    font-weight: 650;
+  }
+
+  .mapa__nota {
+    padding: 0.1rem 0.5rem;
+    background: var(--blanco);
+    border-radius: var(--radio);
+    font-size: 0.875rem;
+    color: var(--piedra-suave);
+  }
+
+  .mapa__fachada .boton {
+    margin-top: var(--esp-2);
+  }
+
+  .mapa :global(iframe) {
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+</style>

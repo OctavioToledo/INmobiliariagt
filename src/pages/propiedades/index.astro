@@ -1,0 +1,367 @@
+---
+import Base from '../../layouts/Base.astro';
+import Filtros from '../../components/Filtros.astro';
+import TarjetaPropiedad from '../../components/TarjetaPropiedad.astro';
+import Icono from '../../components/Icono.astro';
+import { sitio } from '../../config/sitio';
+import { obtenerPropiedades, zonas } from '../../lib/propiedades';
+import { ORDENES, type Filtrable } from '../../lib/filtros';
+import type { Tipo } from '../../lib/formato';
+import { linkWhatsApp, mensajeGeneral } from '../../lib/whatsapp';
+
+const todas = await obtenerPropiedades();
+const tipos = (['casa', 'departamento', 'lote'] as Tipo[]).filter((t) => todas.some((p) => p.tipo === t));
+
+const datosFiltro = (p: Filtrable): Filtrable => ({
+  codigo: p.codigo,
+  operacion: p.operacion,
+  tipo: p.tipo,
+  zona: p.zona,
+  dormitorios: p.dormitorios,
+  precio: p.precio,
+  moneda: p.moneda,
+  fechaAlta: p.fechaAlta,
+});
+const plural = (n: number) => `${n} ${n === 1 ? 'propiedad' : 'propiedades'}`;
+---
+
+<Base
+  titulo={`Propiedades en alquiler y venta en San Martín y Palmira | ${sitio.nombre}`}
+  descripcion="Casas, departamentos y lotes en alquiler y venta en San Martín y Palmira, Mendoza. Filtrá por operación, tipo, zona, dormitorios y precio."
+>
+  <div class="contenedor listado">
+    <header class="listado__encabezado">
+      <h1 data-titulo-listado>Propiedades en San Martín y Palmira</h1>
+    </header>
+
+    <div class="listado__grilla">
+      <Filtros zonas={zonas(todas)} tipos={tipos} />
+
+      <div class="listado__resultados">
+        <div class="listado__barra">
+          <p class="listado__cantidad" aria-live="polite" data-cantidad>{plural(todas.length)}</p>
+          <div class="listado__orden">
+            <label for="f-orden">Ordenar por</label>
+            <select class="control" id="f-orden" name="orden" form="panel-filtros">
+              {Object.entries(ORDENES).map(([valor, texto]) => <option value={valor}>{texto}</option>)}
+            </select>
+          </div>
+        </div>
+
+        <ul class="listado__tarjetas" data-tarjetas>
+          {
+            todas.map((p, i) => (
+              <li data-propiedad={JSON.stringify(datosFiltro(p))}>
+                <TarjetaPropiedad propiedad={p} prioridad={i === 0} nivelTitulo="h2" />
+              </li>
+            ))
+          }
+        </ul>
+
+        <div class="vacio" data-vacio hidden>
+          <Icono nombre="casa" tamano={40} />
+          <p>
+            No hay propiedades con esos filtros. Probá quitar alguno, o escribinos y te avisamos cuando entre algo así.
+          </p>
+          <a class="boton boton--whatsapp boton--grande" href={linkWhatsApp(mensajeGeneral)} target="_blank" rel="noopener" data-vacio-wa>
+            <Icono nombre="whatsapp" />Avisame por WhatsApp
+          </a>
+        </div>
+
+        <nav class="paginas" aria-label="Páginas" data-paginas hidden>
+          <button type="button" class="boton boton--secundario" data-pagina-anterior>Anterior</button>
+          <p data-pagina-actual></p>
+          <button type="button" class="boton boton--secundario" data-pagina-siguiente>Siguiente</button>
+        </nav>
+      </div>
+    </div>
+  </div>
+</Base>
+
+<script>
+  import {
+    FILTROS_VACIOS,
+    contarActivos,
+    escribirFiltros,
+    filtrar,
+    leerFiltros,
+    ordenar,
+    paginar,
+    type Filtrable,
+    type Filtros,
+    type Orden,
+  } from '../../lib/filtros';
+  import { seccionOperacion, type Operacion, type Tipo } from '../../lib/formato';
+  import { linkWhatsApp, mensajeBusqueda } from '../../lib/whatsapp';
+
+  /** Sin paginación visible en la demo; con más stock alcanza con bajar este número. */
+  const POR_PAGINA = 48;
+
+  const form = document.querySelector<HTMLFormElement>('[data-form-filtros]')!;
+  const lista = document.querySelector<HTMLUListElement>('[data-tarjetas]')!;
+  const items = [...lista.querySelectorAll<HTMLLIElement>('[data-propiedad]')].map((li) => ({
+    li,
+    ...(JSON.parse(li.dataset.propiedad ?? '{}') as Filtrable),
+  }));
+  const cantidad = document.querySelector<HTMLElement>('[data-cantidad]')!;
+  const titulo = document.querySelector<HTMLElement>('[data-titulo-listado]')!;
+  const vacio = document.querySelector<HTMLElement>('[data-vacio]')!;
+  const vacioWa = document.querySelector<HTMLAnchorElement>('[data-vacio-wa]')!;
+  const abrir = document.querySelector<HTMLButtonElement>('[data-abrir-filtros]')!;
+  const etiquetaFiltros = document.querySelector<HTMLElement>('[data-etiqueta-filtros]')!;
+  const mostrar = document.querySelector<HTMLButtonElement>('[data-mostrar]')!;
+  const precio = form.querySelector<HTMLSelectElement>('[data-precio]')!;
+  const precioAyuda = form.querySelector<HTMLElement>('[data-precio-ayuda]')!;
+  const orden = document.querySelector<HTMLSelectElement>('#f-orden')!;
+  const paginas = document.querySelector<HTMLElement>('[data-paginas]')!;
+  const topes = JSON.parse(precio.dataset.topes ?? '{}') as Record<Operacion, { valor: number; texto: string }[]>;
+  const tituloOriginal = titulo.textContent ?? '';
+
+  let filtros: Filtros = leerFiltros(new URLSearchParams(location.search));
+  let pagina = Math.max(1, Number(new URLSearchParams(location.search).get('pagina')) || 1);
+
+  const plural = (n: number) => `${n} ${n === 1 ? 'propiedad' : 'propiedades'}`;
+
+  /** Opciones de precio según la operación: nunca se mezclan ARS y USD. */
+  function cargarPrecios(op: Operacion | null, seleccionado: number | null) {
+    const opciones = op ? [...topes[op]] : [];
+    if (op && seleccionado && !opciones.some((o) => o.valor === seleccionado)) {
+      const moneda = op === 'venta' ? 'USD ' : '$';
+      opciones.push({ valor: seleccionado, texto: `${moneda}${seleccionado.toLocaleString('es-AR')}` });
+      opciones.sort((a, b) => a.valor - b.valor);
+    }
+    precio.replaceChildren(
+      new Option('Sin tope', ''),
+      ...opciones.map((o) => new Option(o.texto, String(o.valor), false, o.valor === seleccionado)),
+    );
+    precio.disabled = !op;
+    precioAyuda.hidden = Boolean(op);
+    if (op) precio.removeAttribute('aria-describedby');
+    else precio.setAttribute('aria-describedby', 'f-precio-ayuda');
+  }
+
+  function aFormulario(f: Filtros) {
+    const radio = form.querySelector<HTMLInputElement>(`input[name="operacion"][value="${f.operacion ?? ''}"]`);
+    if (radio) radio.checked = true;
+    (form.elements.namedItem('tipo') as HTMLSelectElement).value = f.tipo ?? '';
+    (form.elements.namedItem('zona') as HTMLSelectElement).value = f.zona ?? '';
+    (form.elements.namedItem('dormitorios') as HTMLSelectElement).value = f.dormitoriosMin ? String(f.dormitoriosMin) : '';
+    cargarPrecios(f.operacion, f.precioMax);
+    orden.value = f.orden;
+  }
+
+  function desdeFormulario(): Filtros {
+    const datos = new FormData(form);
+    const op = (datos.get('operacion') as Operacion) || null;
+    const numero = (v: FormDataEntryValue | null) => (v ? Number(v) : null);
+    return {
+      operacion: op,
+      tipo: (datos.get('tipo') as Tipo) || null,
+      zona: (datos.get('zona') as string) || null,
+      dormitoriosMin: numero(datos.get('dormitorios')),
+      precioMax: op ? numero(datos.get('precio')) : null,
+      orden: (orden.value as Orden) || 'recientes',
+    };
+  }
+
+  function aplicar() {
+    const resultado = ordenar(filtrar(items, filtros), filtros.orden);
+    const pag = paginar(resultado, pagina, POR_PAGINA);
+    pagina = pag.pagina;
+    const visibles = new Set(pag.items.map((p) => p.li));
+
+    for (const item of items) item.li.hidden = !visibles.has(item.li);
+    for (const item of resultado) lista.append(item.li);
+
+    cantidad.textContent = plural(resultado.length);
+    vacio.hidden = resultado.length > 0;
+    lista.hidden = resultado.length === 0;
+    vacioWa.href = linkWhatsApp(mensajeBusqueda(filtros));
+
+    titulo.textContent = filtros.operacion
+      ? `${seccionOperacion[filtros.operacion]} en San Martín y Palmira`
+      : tituloOriginal;
+
+    const activos = contarActivos(filtros);
+    etiquetaFiltros.textContent = activos ? `Filtros (${activos})` : 'Filtros';
+    mostrar.textContent = resultado.length ? `Mostrar ${plural(resultado.length)}` : 'Ver resultados';
+
+    paginas.hidden = pag.totalPaginas <= 1;
+    paginas.querySelector('[data-pagina-actual]')!.textContent = `Página ${pag.pagina} de ${pag.totalPaginas}`;
+    paginas.querySelector<HTMLButtonElement>('[data-pagina-anterior]')!.disabled = pag.pagina <= 1;
+    paginas.querySelector<HTMLButtonElement>('[data-pagina-siguiente]')!.disabled = pag.pagina >= pag.totalPaginas;
+
+    const params = escribirFiltros(filtros);
+    if (pag.pagina > 1) params.set('pagina', String(pag.pagina));
+    const query = params.toString();
+    history.replaceState(null, '', query ? `?${query}` : location.pathname);
+  }
+
+  form.addEventListener('change', (e) => {
+    const anterior = filtros.operacion;
+    filtros = desdeFormulario();
+    // Al cambiar de operación cambia la moneda: el tope de precio se resetea.
+    if ((e.target as HTMLInputElement).name === 'operacion' && anterior !== filtros.operacion) {
+      filtros.precioMax = null;
+      cargarPrecios(filtros.operacion, null);
+    }
+    pagina = 1;
+    aplicar();
+  });
+  // El orden está fuera del panel (asociado con form="panel-filtros"): su evento no burbujea al form.
+  orden.addEventListener('change', () => {
+    filtros = { ...filtros, orden: (orden.value as Orden) || 'recientes' };
+    aplicar();
+  });
+  form.addEventListener('submit', (e) => e.preventDefault());
+
+  form.querySelector('[data-limpiar]')?.addEventListener('click', () => {
+    filtros = { ...FILTROS_VACIOS, orden: filtros.orden };
+    pagina = 1;
+    aFormulario(filtros);
+    aplicar();
+  });
+
+  const panel = form;
+  const alternarPanel = (abierto: boolean) => {
+    abrir.setAttribute('aria-expanded', String(abierto));
+    panel.toggleAttribute('data-abierto', abierto);
+  };
+  abrir.addEventListener('click', () => alternarPanel(abrir.getAttribute('aria-expanded') !== 'true'));
+  mostrar.addEventListener('click', () => {
+    alternarPanel(false);
+    abrir.focus();
+    cantidad.scrollIntoView({ block: 'start' });
+  });
+
+  paginas.querySelector('[data-pagina-anterior]')?.addEventListener('click', () => {
+    pagina -= 1;
+    aplicar();
+    cantidad.scrollIntoView({ block: 'start' });
+  });
+  paginas.querySelector('[data-pagina-siguiente]')?.addEventListener('click', () => {
+    pagina += 1;
+    aplicar();
+    cantidad.scrollIntoView({ block: 'start' });
+  });
+
+  aFormulario(filtros);
+  aplicar();
+</script>
+
+<style>
+  .listado {
+    padding-block: var(--esp-5) var(--esp-8);
+  }
+
+  .listado__encabezado {
+    margin-bottom: var(--esp-5);
+  }
+
+  .listado h1 {
+    font-size: clamp(var(--t2), 1.2rem + 2vw, var(--t4));
+  }
+
+  .listado__grilla {
+    display: grid;
+    gap: var(--esp-4);
+  }
+
+  @media (min-width: 60rem) {
+    .listado__grilla {
+      grid-template-columns: 17rem minmax(0, 1fr);
+      gap: var(--esp-6);
+      align-items: start;
+    }
+  }
+
+  .listado__barra {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--esp-3);
+    margin-bottom: var(--esp-4);
+    scroll-margin-top: calc(var(--alto-header) + var(--esp-3));
+  }
+
+  .listado__cantidad {
+    font-weight: 650;
+    scroll-margin-top: calc(var(--alto-header) + var(--esp-3));
+  }
+
+  .listado__orden {
+    display: flex;
+    align-items: center;
+    gap: var(--esp-2);
+  }
+
+  .listado__orden label {
+    font-size: 0.9375rem;
+    color: var(--piedra-suave);
+    white-space: nowrap;
+  }
+
+  .listado__orden .control {
+    width: auto;
+  }
+
+  .listado__tarjetas {
+    display: grid;
+    gap: var(--esp-5);
+    padding: 0;
+    list-style: none;
+  }
+
+  .listado__tarjetas[hidden],
+  .listado__tarjetas li[hidden] {
+    display: none;
+  }
+
+  @media (min-width: 37.5rem) {
+    .listado__tarjetas {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 80rem) {
+    .listado__tarjetas {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .vacio {
+    display: grid;
+    justify-items: start;
+    gap: var(--esp-4);
+    padding: var(--esp-6) var(--esp-5);
+    background: var(--blanco);
+    border: 1px dashed var(--borde-control);
+    border-radius: var(--radio);
+  }
+
+  .vacio[hidden] {
+    display: none;
+  }
+
+  .vacio :global(svg) {
+    color: var(--piedra-suave);
+  }
+
+  .vacio p {
+    max-width: 52ch;
+    font-size: 1.0625rem;
+  }
+
+  .paginas {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--esp-3);
+    margin-top: var(--esp-6);
+  }
+
+  .paginas[hidden] {
+    display: none;
+  }
+</style>

@@ -1,0 +1,49 @@
+---
+import Icono from './Icono.astro';
+import { linkWhatsApp, mensajeGeneral } from '../lib/whatsapp';
+
+interface Props {
+  /** En la ficha, en mobile lo reemplaza la barra de consulta. */
+  ocultarEnMobile?: boolean;
+  mensaje?: string;
+}
+
+const { ocultarEnMobile = false, mensaje = mensajeGeneral } = Astro.props;
+---
+
+<a
+  class:list={['flotante', { 'flotante--solo-desktop': ocultarEnMobile }]}
+  href={linkWhatsApp(mensaje)}
+  target="_blank"
+  rel="noopener"
+  aria-label="Escribinos por WhatsApp"
+>
+  <Icono nombre="whatsapp" tamano={30} />
+</a>
+
+<style>
+  .flotante {
+    position: fixed;
+    right: max(var(--gutter), env(safe-area-inset-right));
+    bottom: calc(var(--gutter) + env(safe-area-inset-bottom));
+    z-index: 15;
+    display: grid;
+    place-items: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    background: var(--whatsapp);
+    color: var(--blanco);
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgb(22 107 58 / 0.4);
+  }
+
+  .flotante:hover {
+    background: var(--whatsapp-oscuro);
+  }
+
+  @media (max-width: 47.99rem) {
+    .flotante--solo-desktop {
+      display: none;
+    }
+  }
+</style>

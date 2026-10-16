@@ -1,0 +1,130 @@
+---
+/**
+ * El cartel de "Vende / Alquila" colgado en la reja: el elemento memorable del sitio.
+ * Venta y alquiler se distinguen por color y por texto.
+ */
+import { formatearPrecio, verboCartel, type Moneda, type Operacion } from '../lib/formato';
+
+interface Props {
+  operacion: Operacion;
+  precio: number | null;
+  moneda: Moneda;
+  periodo: 'mensual' | null;
+  disponibilidad?: 'disponible' | 'reservada';
+  tamano?: 'normal' | 'grande';
+  class?: string;
+}
+
+const { operacion, precio, moneda, periodo, disponibilidad = 'disponible', tamano = 'normal', class: clase } = Astro.props;
+const textoPrecio = formatearPrecio({ precio, moneda, periodo });
+const reservada = disponibilidad === 'reservada';
+---
+
+<p
+  class:list={['cartel', `cartel--${operacion}`, `cartel--${tamano}`, { 'cartel--reservada': reservada }, clase]}
+>
+  <span class="cartel__operacion">{verboCartel[operacion]}</span>
+  <span class="cartel__precio">{textoPrecio}</span>
+  {reservada && <span class="cartel__franja">Reservada</span>}
+</p>
+
+<style>
+  .cartel {
+    --pad: 0.4rem 0.7rem 0.45rem;
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: var(--pad);
+    overflow: hidden;
+    border-radius: var(--radio-chapa);
+    line-height: 1;
+    /* Borde interior apenas más claro, como el canto de una chapa pintada. */
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.22), 0 1px 2px rgb(34 39 42 / 0.25);
+  }
+
+  /* Los dos agujeros de donde cuelga el cartel. */
+  .cartel::before,
+  .cartel::after {
+    content: '';
+    position: absolute;
+    top: 0.3rem;
+    width: 0.25rem;
+    height: 0.25rem;
+    border-radius: 50%;
+    background: rgb(34 39 42 / 0.35);
+  }
+
+  .cartel::before {
+    left: 0.3rem;
+  }
+
+  .cartel::after {
+    right: 0.3rem;
+  }
+
+  .cartel--venta {
+    background: var(--ocre);
+    color: var(--piedra);
+  }
+
+  .cartel--alquiler {
+    background: var(--acequia);
+    color: var(--blanco);
+  }
+
+  .cartel__operacion {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    font-stretch: 100%;
+    padding-inline: 0.35rem;
+  }
+
+  .cartel__precio {
+    font-size: 1.5rem;
+    font-weight: 800;
+    font-stretch: var(--ancho-cartel);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.005em;
+    white-space: nowrap;
+  }
+
+  .cartel--grande {
+    --pad: 0.6rem 1rem 0.7rem;
+    gap: 0.25rem;
+  }
+
+  .cartel--grande .cartel__operacion {
+    font-size: 1rem;
+  }
+
+  .cartel--grande .cartel__precio {
+    font-size: clamp(2.25rem, 1.8rem + 2vw, 3rem);
+  }
+
+  .cartel--grande::before,
+  .cartel--grande::after {
+    top: 0.4rem;
+    width: 0.35rem;
+    height: 0.35rem;
+  }
+
+  .cartel__franja {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 160%;
+    padding-block: 0.15rem;
+    background: var(--piedra);
+    color: var(--blanco);
+    font-size: 0.75rem;
+    font-weight: 700;
+    font-stretch: 100%;
+    text-align: center;
+    transform: translate(-50%, -50%) rotate(-12deg);
+  }
+
+  .cartel--grande .cartel__franja {
+    font-size: 1rem;
+  }
+</style>

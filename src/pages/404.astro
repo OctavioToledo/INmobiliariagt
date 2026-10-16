@@ -1,0 +1,62 @@
+---
+import Base from '../layouts/Base.astro';
+import Icono from '../components/Icono.astro';
+import { sitio } from '../config/sitio';
+import { linkWhatsApp } from '../lib/whatsapp';
+---
+
+<Base titulo={`Página no encontrada | ${sitio.nombre}`} descripcion="La página que buscás no existe o la propiedad ya no está publicada." noindex>
+  <section class="seccion">
+    <div class="contenedor no-encontrada">
+      <p class="cartel-404" aria-hidden="true"><span>Se fue</span><strong>404</strong></p>
+      <h1>Esta página no existe</h1>
+      <p class="texto texto-suave">
+        Puede que la propiedad ya se haya alquilado o vendido, o que el link esté mal escrito.
+      </p>
+      <div class="no-encontrada__botones">
+        <a class="boton boton--primario boton--grande" href="/propiedades">Ver propiedades</a>
+        <a class="boton boton--whatsapp boton--grande" href={linkWhatsApp('Hola, estaba buscando una propiedad en el sitio y no la encontré.')} target="_blank" rel="noopener">
+          <Icono nombre="whatsapp" />Consultar por WhatsApp
+        </a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .no-encontrada {
+    display: grid;
+    justify-items: start;
+    gap: var(--esp-4);
+    min-height: 50vh;
+    align-content: center;
+  }
+
+  .cartel-404 {
+    display: inline-flex;
+    flex-direction: column;
+    padding: 0.6rem 1rem 0.7rem;
+    background: var(--ocre);
+    color: var(--piedra);
+    border-radius: var(--radio-chapa);
+    line-height: 1;
+    transform: rotate(-3deg);
+  }
+
+  .cartel-404 span {
+    font-weight: 600;
+  }
+
+  .cartel-404 strong {
+    font-size: var(--t5);
+    font-weight: 800;
+    font-stretch: var(--ancho-cartel);
+  }
+
+  .no-encontrada__botones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--esp-3);
+    margin-top: var(--esp-2);
+  }
+</style>

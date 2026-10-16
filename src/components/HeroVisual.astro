@@ -1,0 +1,162 @@
+---
+/**
+ * Columna derecha del hero en desktop. Con 3 fotos reales arma un collage;
+ * si todavía no hay fotos, cuelga en una reja los carteles de propiedades reales.
+ */
+import { Picture } from 'astro:assets';
+import Cartel from './Cartel.astro';
+import { fotosDe, type Foto } from '../lib/fotos';
+import { urlPropiedad, type Propiedad } from '../lib/propiedades';
+
+interface Props {
+  propiedades: Propiedad[];
+}
+
+const { propiedades } = Astro.props;
+
+const conFoto = propiedades
+  .map((p) => ({ p, foto: fotosDe(p)[0] }))
+  .filter((x): x is { p: Propiedad; foto: Foto } => Boolean(x.foto))
+  .slice(0, 3);
+
+// Para la reja: una de cada operación primero, después el resto.
+const colgadas = [
+  ...['venta', 'alquiler'].flatMap((op) => propiedades.filter((p) => p.operacion === op).slice(0, 1)),
+  ...propiedades,
+]
+  .filter((p, i, lista) => lista.findIndex((q) => q.codigo === p.codigo) === i)
+  .slice(0, 3);
+---
+
+{
+  conFoto.length === 3 ? (
+    <div class="collage" aria-hidden="true">
+      {conFoto.map(({ foto }, i) => (
+        <div class={`collage__celda collage__celda--${i + 1}`}>
+          <Picture
+            src={foto.src}
+            alt=""
+            formats={['avif', 'webp']}
+            widths={i === 0 ? [420, 640] : [320, 480]}
+            sizes={i === 0 ? '20rem' : '14rem'}
+            loading="eager"
+          />
+        </div>
+      ))}
+    </div>
+  ) : (
+    <div class="reja">
+      <ul class="reja__carteles">
+        {colgadas.map((p, i) => (
+          <li class={`reja__item reja__item--${i + 1}`}>
+            <a href={urlPropiedad(p)} class="reja__link">
+              <Cartel operacion={p.operacion} precio={p.precio} moneda={p.moneda} periodo={p.periodo} disponibilidad={p.disponibilidad} tamano="grande" />
+              <span class="reja__titulo">{p.titulo}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+<style>
+  .collage {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: var(--esp-3);
+    aspect-ratio: 5 / 4;
+  }
+
+  .collage__celda {
+    min-height: 0;
+    overflow: hidden;
+    border-radius: var(--radio);
+  }
+
+  .collage__celda--1 {
+    grid-row: 1 / 3;
+  }
+
+  .collage__celda :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Reja de hierro: barrotes verticales entre dos travesaños. */
+  .reja {
+    position: relative;
+    padding: 2.5rem 1.5rem 2rem;
+    background:
+      linear-gradient(var(--piedra), var(--piedra)) top 1rem left 0 / 100% 5px no-repeat,
+      linear-gradient(var(--piedra), var(--piedra)) bottom 0.75rem left 0 / 100% 5px no-repeat,
+      repeating-linear-gradient(90deg, transparent 0 34px, rgb(34 39 42 / 0.85) 34px 38px);
+    border-radius: var(--radio);
+  }
+
+  .reja__carteles {
+    display: grid;
+    gap: 2.25rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .reja__item {
+    position: relative;
+    justify-self: start;
+  }
+
+  .reja__item--1 {
+    transform: rotate(-2deg);
+  }
+
+  .reja__item--2 {
+    justify-self: end;
+    transform: rotate(1.5deg);
+  }
+
+  .reja__item--3 {
+    margin-left: 12%;
+    transform: rotate(-1deg);
+  }
+
+  /* El alambre de donde cuelga cada cartel. */
+  .reja__item::before {
+    content: '';
+    position: absolute;
+    left: 0.6rem;
+    right: 0.6rem;
+    top: -1.1rem;
+    height: 1.5rem;
+    border: 2px solid var(--piedra-suave);
+    border-bottom: 0;
+    border-radius: 2px 2px 0 0;
+  }
+
+  .reja__link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    text-decoration: none;
+  }
+
+  .reja__link :global(.cartel) {
+    position: relative;
+  }
+
+  .reja__titulo {
+    max-width: 18rem;
+    padding: 0.15rem 0.5rem;
+    background: var(--cielo);
+    border-radius: var(--radio);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .reja__link:hover .reja__titulo {
+    text-decoration: underline;
+  }
+</style>

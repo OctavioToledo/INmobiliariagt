@@ -1,0 +1,60 @@
+---
+/** Íconos + texto con los ambientes. Solo muestra lo que existe; en lotes, la superficie. */
+import Icono from './Icono.astro';
+import type { Propiedad } from '../lib/propiedades';
+import { formatearSuperficie } from '../lib/formato';
+
+interface Props {
+  propiedad: Propiedad;
+}
+
+const { propiedad: p } = Astro.props;
+
+const items: { icono: 'dormitorio' | 'bano' | 'cochera' | 'superficie'; valor: string; etiqueta: string }[] = [];
+if (p.tipo !== 'lote') {
+  if (p.dormitorios) items.push({ icono: 'dormitorio', valor: String(p.dormitorios), etiqueta: p.dormitorios === 1 ? 'dormitorio' : 'dormitorios' });
+  if (p.banos) items.push({ icono: 'bano', valor: String(p.banos), etiqueta: p.banos === 1 ? 'baño' : 'baños' });
+  if (p.cocheras) items.push({ icono: 'cochera', valor: String(p.cocheras), etiqueta: p.cocheras === 1 ? 'cochera' : 'cocheras' });
+}
+const superficie = p.tipo === 'lote' ? p.superficieTotal : p.superficieCubierta ?? p.superficieTotal;
+if (superficie && (p.tipo === 'lote' || items.length < 3)) {
+  items.push({ icono: 'superficie', valor: formatearSuperficie(superficie), etiqueta: p.tipo === 'lote' ? 'de terreno' : 'cubiertos' });
+}
+---
+
+{
+  items.length > 0 && (
+    <ul class="caracteristicas">
+      {items.map((i) => (
+        <li>
+          <Icono nombre={i.icono} tamano={18} />
+          <span>
+            {i.valor}
+            <span class="sr-only"> {i.etiqueta}</span>
+          </span>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+<style>
+  .caracteristicas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--esp-2) var(--esp-4);
+    padding: 0;
+    list-style: none;
+    font-variant-numeric: tabular-nums;
+  }
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  li :global(svg) {
+    color: var(--piedra-suave);
+  }
+</style>

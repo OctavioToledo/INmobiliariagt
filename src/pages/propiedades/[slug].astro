@@ -1,0 +1,411 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Base from '../../layouts/Base.astro';
+import Galeria from '../../components/Galeria.astro';
+import Cartel from '../../components/Cartel.astro';
+import DatosClave from '../../components/DatosClave.astro';
+import MapaFachada from '../../components/MapaFachada.astro';
+import TarjetaPropiedad from '../../components/TarjetaPropiedad.astro';
+import BarraConsulta from '../../components/BarraConsulta.astro';
+import Icono from '../../components/Icono.astro';
+import { sitio } from '../../config/sitio';
+import { fotosDe } from '../../lib/fotos';
+import { obtenerPropiedades, resumenAmbientes, similares, urlPropiedad, type Propiedad } from '../../lib/propiedades';
+import { formatearPrecio, lugarDe, nombreOperacion, nombreTipo, seccionOperacion } from '../../lib/formato';
+import { linkWhatsApp, mensajeConsulta } from '../../lib/whatsapp';
+import { embedGoogle, embedOsm } from '../../lib/mapas';
+
+export const getStaticPaths = (async () => {
+  const todas = await obtenerPropiedades();
+  return todas.map((propiedad) => ({ params: { slug: propiedad.slug }, props: { propiedad, todas } }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  propiedad: Propiedad;
+  todas: Propiedad[];
+}
+
+const { propiedad: p, todas } = Astro.props;
+const fotos = fotosDe(p);
+const parecidas = similares(p, todas);
+const url = new URL(urlPropiedad(p), Astro.site).href;
+const wa = linkWhatsApp(mensajeConsulta(p, url));
+
+const lugar = lugarDe(p.zona);
+const precio = formatearPrecio(p);
+const ambientes = resumenAmbientes(p);
+const listado = `/propiedades?operacion=${p.operacion}`;
+
+const titulo = `${p.titulo} – ${nombreOperacion[p.operacion]} en ${lugar} | ${sitio.nombre}`;
+const descripcion = [
+  `${nombreOperacion[p.operacion]}: ${precio === 'Consultar' ? 'precio a consultar' : precio}.`,
+  `${nombreTipo[p.tipo]}${ambientes ? ` con ${ambientes}` : ''} en ${lugar}, Mendoza.`,
+  `Cód. ${p.codigo}. Consultá por WhatsApp.`,
+].join(' ');
+
+// Ubicación aproximada: coordenadas si las hay; si no, la calle de referencia y la zona.
+const referencia = [p.calle, lugar, 'Mendoza'].filter(Boolean).join(', ');
+const embed = p.ubicacion ? embedOsm(p.ubicacion) : embedGoogle(referencia, 15);
+
+const tipoSchema = { casa: 'SingleFamilyResidence', departamento: 'Apartment', lote: 'Place' } as const;
+const jsonLd: Record<string, unknown>[] = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Offer',
+    name: p.titulo,
+    url,
+    ...(p.descripcion && { description: p.descripcion }),
+    businessFunction: `http://purl.org/goodrelations/v1#${p.operacion === 'venta' ? 'Sell' : 'LeaseOut'}`,
+    availability: p.disponibilidad === 'disponible' ? 'https://schema.org/InStock' : 'https://schema.org/LimitedAvailability',
+    ...(p.precio !== null && {
+      priceCurrency: p.moneda,
+      price: p.precio,
+      ...(p.periodo === 'mensual' && {
+        priceSpecification: { '@type': 'UnitPriceSpecification', price: p.precio, priceCurrency: p.moneda, unitCode: 'MON' },
+      }),
+    }),
+    seller: { '@type': 'RealEstateAgent', name: sitio.nombre, telephone: sitio.telefono.link },
+    itemOffered: {
+      '@type': tipoSchema[p.tipo],
+      name: p.titulo,
+      address: { '@type': 'PostalAddress', addressLocality: p.zona, addressRegion: 'Mendoza', addressCountry: 'AR' },
+      ...(p.ubicacion && { geo: { '@type': 'GeoCoordinates', latitude: p.ubicacion.lat, longitude: p.ubicacion.lng } }),
+      ...(p.dormitorios && p.tipo !== 'lote' && { numberOfBedrooms: p.dormitorios }),
+      ...(p.banos && p.tipo !== 'lote' && { numberOfBathroomsTotal: p.banos }),
+      ...(p.superficieTotal && { floorSize: { '@type': 'QuantitativeValue', value: p.superficieTotal, unitCode: 'MTK' } }),
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Inicio', item: new URL('/', Astro.site).href },
+      { '@type': 'ListItem', position: 2, name: seccionOperacion[p.operacion], item: new URL(listado, Astro.site).href },
+      { '@type': 'ListItem', position: 3, name: p.titulo },
+    ],
+  },
+];
+---
+
+<Base
+  titulo={titulo}
+  descripcion={descripcion}
+  imagenOg={`/og/${p.slug}.jpg`}
+  altImagenOg={`${p.titulo}: ${precio}`}
+  tipoOg="article"
+  jsonLd={jsonLd}
+  flotanteSoloDesktop
+>
+  <div class="contenedor">
+    <nav class="migas" aria-label="Ruta de navegación">
+      <ol>
+        <li><a href="/">Inicio</a></li>
+        <li><a href={listado}>{seccionOperacion[p.operacion]}</a></li>
+        <li aria-current="page">{p.titulo}</li>
+      </ol>
+    </nav>
+  </div>
+
+  <div class="contenedor ficha">
+    <div class="ficha__galeria">
+      <Galeria fotos={fotos} tipo={p.tipo} />
+    </div>
+
+    <aside class="ficha__lateral">
+      <div class="ficha__encabezado">
+        <h1>{p.titulo}</h1>
+        <p class="ficha__meta">
+          <span><Icono nombre="ubicacion" tamano={18} />{lugar}</span>
+          <span>Cód. {p.codigo}</span>
+        </p>
+        <Cartel
+          operacion={p.operacion}
+          precio={p.precio}
+          moneda={p.moneda}
+          periodo={p.periodo}
+          disponibilidad={p.disponibilidad}
+          tamano="grande"
+        />
+      </div>
+      <div class="ficha__acciones">
+        <a class="boton boton--whatsapp boton--grande boton--ancho" href={wa} target="_blank" rel="noopener">
+          <Icono nombre="whatsapp" />Consultar por WhatsApp
+        </a>
+        <div class="ficha__acciones-fila">
+          <a class="boton boton--secundario" href={`tel:${sitio.telefono.link}`}>
+            <Icono nombre="telefono" />Llamar
+          </a>
+          <button type="button" class="boton boton--secundario" data-compartir data-titulo={p.titulo} data-url={url}>
+            <Icono nombre="compartir" /><span data-compartir-texto>Compartir</span>
+          </button>
+        </div>
+        <p class="sr-only" role="status" data-compartir-estado></p>
+      </div>
+    </aside>
+
+    <div class="ficha__cuerpo">
+      <DatosClave propiedad={p} />
+
+      {
+        p.descripcion && (
+          <section aria-labelledby="titulo-descripcion">
+            <h2 id="titulo-descripcion">Descripción</h2>
+            <div class="texto ficha__descripcion">
+              {p.descripcion.split(/\n{2,}/).map((parrafo) => <p>{parrafo}</p>)}
+            </div>
+          </section>
+        )
+      }
+
+      <section aria-labelledby="titulo-ubicacion">
+        <h2 id="titulo-ubicacion">Ubicación</h2>
+        <MapaFachada
+          embed={embed}
+          titulo={`Mapa con la ubicación aproximada de ${p.titulo}`}
+          lugar={p.calle ? `${p.calle}, ${lugar}` : lugar}
+          nota="Ubicación aproximada"
+        />
+      </section>
+    </div>
+  </div>
+
+  {
+    parecidas.length > 0 && (
+      <section class="seccion similares" aria-labelledby="titulo-similares">
+        <div class="contenedor">
+          <div class="seccion__encabezado">
+            <h2 id="titulo-similares">Propiedades similares</h2>
+            <a class="link" href={listado}>{p.operacion === 'venta' ? 'Ver todas las ventas' : 'Ver todos los alquileres'}</a>
+          </div>
+          <ul class="similares__grilla">
+            {parecidas.map((q) => (
+              <li>
+                <TarjetaPropiedad propiedad={q} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  <BarraConsulta whatsapp={wa} slot="final" />
+</Base>
+
+<script>
+  for (const boton of document.querySelectorAll<HTMLButtonElement>('[data-compartir]')) {
+    const texto = boton.querySelector<HTMLElement>('[data-compartir-texto]')!;
+    const estado = boton.closest('.ficha__acciones')?.querySelector<HTMLElement>('[data-compartir-estado]');
+    boton.addEventListener('click', async () => {
+      const datos = { title: boton.dataset.titulo ?? document.title, url: boton.dataset.url ?? location.href };
+      if (navigator.share) {
+        try {
+          await navigator.share(datos);
+        } catch {
+          // La persona canceló: no hay nada que hacer.
+        }
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(datos.url);
+        texto.textContent = 'Link copiado';
+        if (estado) estado.textContent = 'Link copiado al portapapeles';
+        setTimeout(() => (texto.textContent = 'Compartir'), 2500);
+      } catch {
+        window.prompt('Copiá el link de la propiedad:', datos.url);
+      }
+    });
+  }
+</script>
+
+<style>
+  .migas ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 var(--esp-2);
+    padding: var(--esp-2) 0;
+    list-style: none;
+    font-size: 0.9375rem;
+    color: var(--piedra-suave);
+  }
+
+  .migas li:not(:last-child)::after {
+    content: '/';
+    margin-left: var(--esp-2);
+    color: var(--borde-control);
+  }
+
+  .migas a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tactil);
+  }
+
+  .migas [aria-current] {
+    overflow: hidden;
+    max-width: 22ch;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ficha {
+    display: grid;
+    gap: var(--esp-5);
+    padding-bottom: var(--esp-7);
+  }
+
+  /* En mobile la galería va de borde a borde. */
+  @media (max-width: 47.99rem) {
+    .ficha__galeria {
+      margin-inline: calc(var(--gutter) * -1);
+    }
+  }
+
+  .ficha__lateral {
+    display: grid;
+    gap: var(--esp-5);
+  }
+
+  .ficha__encabezado {
+    display: grid;
+    gap: var(--esp-3);
+    justify-items: start;
+  }
+
+  .ficha h1 {
+    font-size: clamp(var(--t2), 1.2rem + 1.8vw, var(--t4));
+  }
+
+  .ficha__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--esp-1) var(--esp-5);
+    color: var(--piedra-suave);
+  }
+
+  .ficha__meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .ficha__acciones {
+    display: grid;
+    gap: var(--esp-3);
+  }
+
+  .ficha__acciones-fila {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--esp-3);
+  }
+
+  /* En mobile la consulta está en la barra fija: acá queda solo "Compartir". */
+  @media (max-width: 47.99rem) {
+    .ficha__acciones > .boton--whatsapp,
+    .ficha__acciones-fila > a {
+      display: none;
+    }
+
+    .ficha__acciones-fila {
+      grid-template-columns: 1fr;
+    }
+
+    .ficha__acciones-fila .boton {
+      justify-self: start;
+    }
+  }
+
+  .ficha__cuerpo {
+    display: grid;
+    gap: var(--esp-6);
+    min-width: 0;
+  }
+
+  .ficha__cuerpo h2 {
+    margin-bottom: var(--esp-4);
+    font-size: var(--t2);
+  }
+
+  .ficha__descripcion {
+    display: grid;
+    gap: var(--esp-3);
+    font-size: 1.0625rem;
+  }
+
+  /* El texto del cliente trae listas con saltos de línea simples. */
+  .ficha__descripcion p {
+    white-space: pre-line;
+  }
+
+  @media (min-width: 48rem) {
+    .ficha {
+      grid-template-columns: minmax(0, 1fr) 21rem;
+      grid-template-areas:
+        'galeria lateral'
+        'cuerpo lateral';
+      gap: var(--esp-6) var(--esp-7);
+      align-items: start;
+    }
+
+    .ficha__galeria {
+      grid-area: galeria;
+    }
+
+    .ficha h1 {
+      font-size: var(--t3);
+    }
+
+    .ficha__lateral {
+      grid-area: lateral;
+      position: sticky;
+      top: calc(var(--alto-header) + var(--esp-5));
+      padding: var(--esp-5);
+      background: var(--blanco);
+      border: 1px solid var(--adobe);
+      border-radius: var(--radio);
+    }
+
+    .ficha__cuerpo {
+      grid-area: cuerpo;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .ficha {
+      grid-template-columns: minmax(0, 1fr) 24rem;
+    }
+  }
+
+  .similares {
+    background: var(--blanco);
+    border-top: 1px solid var(--adobe);
+    padding-bottom: calc(var(--esp-7) + 4rem);
+  }
+
+  @media (min-width: 48rem) {
+    .similares {
+      padding-bottom: var(--esp-8);
+    }
+  }
+
+  .similares__grilla {
+    display: grid;
+    gap: var(--esp-5);
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 37.5rem) {
+    .similares__grilla {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .similares__grilla {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

@@ -1,0 +1,56 @@
+---
+/** Wordmark provisorio hasta tener el logo (irá en /public/brand/). */
+import { sitio } from '../config/sitio';
+---
+
+<a href="/" class="logo" aria-label={`${sitio.nombre}, inicio`}>
+  <span class="logo__chapa" aria-hidden="true">GT</span>
+  <span class="logo__texto" aria-hidden="true">
+    <span class="logo__nombre">Gerardo Tello</span>
+    <span class="logo__rubro">Inmobiliaria</span>
+  </span>
+</a>
+
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: var(--tactil);
+    color: var(--blanco);
+    text-decoration: none;
+  }
+
+  .logo__chapa {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2rem;
+    background: var(--ocre);
+    color: var(--piedra);
+    border-radius: var(--radio-chapa);
+    font-size: 1.125rem;
+    font-weight: 800;
+    font-stretch: var(--ancho-cartel);
+    line-height: 1;
+  }
+
+  .logo__texto {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.05;
+  }
+
+  .logo__nombre {
+    font-size: 1.0625rem;
+    font-weight: 700;
+    font-stretch: var(--ancho-titulo);
+  }
+
+  .logo__rubro {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    font-stretch: 100%;
+    color: var(--adobe);
+  }
+</style>

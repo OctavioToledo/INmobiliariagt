@@ -1,0 +1,55 @@
+---
+import Base from '../layouts/Base.astro';
+import { sitio, direccionCompleta } from '../config/sitio';
+---
+
+<Base titulo={`Política de privacidad | ${sitio.nombre}`} descripcion={`Cómo trata ${sitio.nombre} los datos de quienes visitan el sitio y nos consultan.`}>
+  <article class="seccion">
+    <div class="contenedor texto privacidad">
+      <h1>Política de privacidad</h1>
+
+      <p>
+        Este sitio no tiene formularios que guarden datos, cuentas de usuario ni herramientas de seguimiento publicitario.
+        Esta página explica qué pasa con tu información cuando lo usás.
+      </p>
+
+      <h2>Consultas por WhatsApp, teléfono o email</h2>
+      <p>
+        Los botones de consulta y el formulario de tasación no envían nada a un servidor: solo arman un mensaje y abren
+        WhatsApp en tu dispositivo. Vos decidís si lo enviás. Lo que nos mandes por WhatsApp, teléfono o email lo usamos
+        únicamente para responder tu consulta y gestionar la operación inmobiliaria que nos pidas, y no lo compartimos con
+        terceros salvo que sea necesario para esa operación (por ejemplo, con el propietario o el locatario).
+      </p>
+
+      <h2>Mapas</h2>
+      <p>
+        Los mapas solo se cargan si tocás "Ver en el mapa". En ese momento se conectan con Google Maps u OpenStreetMap,
+        que tienen sus propias políticas de privacidad.
+      </p>
+
+      <h2>Tus derechos</h2>
+      <p>
+        Según la Ley 25.326 de Protección de los Datos Personales, podés pedirnos acceder, rectificar o suprimir los datos
+        que tengamos sobre vos. Escribinos a <a href={`mailto:${sitio.email}`}>{sitio.email}</a> o acercate a
+        {` ${direccionCompleta}`}.
+      </p>
+      <p class="texto-suave">
+        La Agencia de Acceso a la Información Pública, en su carácter de órgano de control de la Ley 25.326, tiene la
+        atribución de atender las denuncias y reclamos que se interpongan con relación al incumplimiento de las normas
+        sobre protección de datos personales.
+      </p>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .privacidad {
+    display: grid;
+    gap: var(--esp-4);
+  }
+
+  .privacidad h2 {
+    margin-top: var(--esp-4);
+    font-size: var(--t2);
+  }
+</style>

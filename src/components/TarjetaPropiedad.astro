@@ -1,0 +1,143 @@
+---
+import { Picture } from 'astro:assets';
+import Cartel from './Cartel.astro';
+import Caracteristicas from './Caracteristicas.astro';
+import Icono from './Icono.astro';
+import SinFotos from './SinFotos.astro';
+import { fotosDe } from '../lib/fotos';
+import { urlPropiedad, type Propiedad } from '../lib/propiedades';
+
+interface Props {
+  propiedad: Propiedad;
+  /** La primera tarjeta visible carga su foto sin lazy. */
+  prioridad?: boolean;
+  nivelTitulo?: 'h2' | 'h3';
+}
+
+const { propiedad: p, prioridad = false, nivelTitulo = 'h3' } = Astro.props;
+const foto = fotosDe(p)[0];
+const Titulo = nivelTitulo;
+---
+
+<article class="tarjeta">
+  <div class="tarjeta__foto">
+    {
+      foto ? (
+        <Picture
+          src={foto.src}
+          alt={foto.alt}
+          formats={['avif', 'webp']}
+          widths={[360, 560, 760, 1100]}
+          sizes="(min-width: 64rem) 22rem, (min-width: 37.5rem) 50vw, 100vw"
+          loading={prioridad ? 'eager' : 'lazy'}
+          fetchpriority={prioridad ? 'high' : 'auto'}
+        />
+      ) : (
+        <SinFotos tipo={p.tipo} />
+      )
+    }
+    <Cartel
+      class="tarjeta__cartel"
+      operacion={p.operacion}
+      precio={p.precio}
+      moneda={p.moneda}
+      periodo={p.periodo}
+      disponibilidad={p.disponibilidad}
+    />
+  </div>
+  <div class="tarjeta__cuerpo">
+    <Titulo class="tarjeta__titulo">
+      <a href={urlPropiedad(p)}>{p.titulo}</a>
+    </Titulo>
+    <p class="tarjeta__zona">
+      <Icono nombre="ubicacion" tamano={16} />
+      {p.zona}
+    </p>
+    <Caracteristicas propiedad={p} />
+    <p class="tarjeta__codigo">Cód. {p.codigo}</p>
+  </div>
+</article>
+
+<style>
+  .tarjeta {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    background: var(--blanco);
+    border: 1px solid var(--adobe);
+    border-radius: var(--radio);
+  }
+
+  .tarjeta:focus-within {
+    outline: 3px solid var(--foco);
+    outline-offset: 2px;
+  }
+
+  .tarjeta__foto {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    background: var(--adobe);
+  }
+
+  .tarjeta__foto :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .tarjeta__foto :global(.tarjeta__cartel) {
+    position: absolute;
+    left: var(--esp-3);
+    bottom: var(--esp-3);
+  }
+
+  .tarjeta__cuerpo {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--esp-2);
+    padding: var(--esp-4);
+  }
+
+  .tarjeta__titulo {
+    font-size: 1.125rem;
+    font-weight: 650;
+    font-stretch: 100%;
+    line-height: 1.25;
+  }
+
+  .tarjeta__titulo a {
+    text-decoration: none;
+  }
+
+  .tarjeta__titulo a:hover {
+    text-decoration: underline;
+  }
+
+  .tarjeta__titulo a:focus-visible {
+    outline: none;
+  }
+
+  /* Toda la tarjeta es clickeable a través del link del título. */
+  .tarjeta__titulo a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .tarjeta__zona {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: var(--piedra-suave);
+  }
+
+  .tarjeta__codigo {
+    margin-top: auto;
+    padding-top: var(--esp-1);
+    font-size: var(--t-1);
+    color: var(--piedra-suave);
+  }
+</style>

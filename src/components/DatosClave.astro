@@ -1,0 +1,77 @@
+---
+/** Grilla de datos de la ficha. Solo aparecen los datos que existen. */
+import Icono, { type NombreIcono } from './Icono.astro';
+import type { Propiedad } from '../lib/propiedades';
+import { formatearSuperficie } from '../lib/formato';
+
+interface Props {
+  propiedad: Propiedad;
+}
+
+const { propiedad: p } = Astro.props;
+const esLote = p.tipo === 'lote';
+const estados = { nuevo: 'A estrenar', usado: 'Usado', 'en construccion': 'En construcción' } as const;
+
+const datos: { icono: NombreIcono; etiqueta: string; valor: string }[] = [];
+if (!esLote && p.dormitorios !== null) datos.push({ icono: 'dormitorio', etiqueta: 'Dormitorios', valor: String(p.dormitorios) });
+if (!esLote && p.banos !== null) datos.push({ icono: 'bano', etiqueta: 'Baños', valor: String(p.banos) });
+if (!esLote && p.cocheras !== null) datos.push({ icono: 'cochera', etiqueta: 'Cocheras', valor: p.cocheras === 0 ? 'Sin cochera' : String(p.cocheras) });
+if (p.superficieTotal !== null) datos.push({ icono: 'superficie', etiqueta: esLote ? 'Superficie' : 'Superficie total', valor: formatearSuperficie(p.superficieTotal) });
+if (!esLote && p.superficieCubierta !== null) datos.push({ icono: 'superficie', etiqueta: 'Superficie cubierta', valor: formatearSuperficie(p.superficieCubierta) });
+if (!esLote && p.estado !== null) datos.push({ icono: 'estado', etiqueta: 'Estado', valor: estados[p.estado] });
+if (p.aptoCredito !== null) datos.push({ icono: 'credito', etiqueta: 'Apto crédito', valor: p.aptoCredito ? 'Sí' : 'No' });
+if (!esLote && p.mascotas !== null) datos.push({ icono: 'mascota', etiqueta: 'Mascotas', valor: p.mascotas ? 'Se aceptan' : 'No se aceptan' });
+---
+
+{
+  datos.length > 0 && (
+    <dl class="datos">
+      {datos.map((d) => (
+        <div class="datos__item">
+          <Icono nombre={d.icono} tamano={24} />
+          <dt>{d.etiqueta}</dt>
+          <dd>{d.valor}</dd>
+        </div>
+      ))}
+    </dl>
+  )
+}
+
+<style>
+  .datos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+    gap: 1px;
+    overflow: hidden;
+    background: var(--adobe);
+    border: 1px solid var(--adobe);
+    border-radius: var(--radio);
+  }
+
+  .datos__item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    column-gap: var(--esp-3);
+    align-items: center;
+    padding: var(--esp-3) var(--esp-4);
+    background: var(--blanco);
+  }
+
+  .datos__item :global(svg) {
+    grid-row: span 2;
+    color: var(--alamo);
+  }
+
+  dt {
+    font-size: 0.875rem;
+    color: var(--piedra-suave);
+  }
+
+  dd {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 650;
+    font-variant-numeric: tabular-nums;
+  }
+</style>
